@@ -115,8 +115,7 @@ function Header() {
           }
 
           .subtitle {
-            font-size: 0.75rem;
-            max-width: 240px;
+            display: none;
           }
         }
 
