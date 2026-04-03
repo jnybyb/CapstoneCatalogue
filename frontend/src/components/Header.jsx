@@ -39,7 +39,7 @@ function Header() {
         .header-content {
           width: 100%;
           margin: 0;
-          padding: 0.35rem 2rem;
+          padding: 0.8rem 2rem 0.35rem 2rem;
           display: flex;
           align-items: center;
           box-sizing: border-box;
@@ -106,16 +106,16 @@ function Header() {
           }
 
           .brand-logo {
-            width: 36px;
-            height: 36px;
+            width: 50px;
+            height: 50px;
           }
 
           .brand-text h1 {
-            font-size: 1rem;
+            font-size: 1.4rem;
           }
 
           .subtitle {
-            font-size: 0.65rem;
+            font-size: 0.75rem;
             max-width: 240px;
           }
         }

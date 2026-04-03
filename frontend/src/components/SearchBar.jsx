@@ -50,7 +50,7 @@ function SearchBar() {
           padding: 0.5rem 0.7rem;
           transition: border-color 0.3s ease, box-shadow 0.3s ease;
           width: 100%;
-          max-width: 380px;
+          max-width: 600px;
           min-width: 120px;
         }
 
@@ -82,7 +82,7 @@ function SearchBar() {
 
         @media (max-width: 768px) {
           .search-form {
-            max-width: 300px;
+            max-width: 450px;
             padding: 0.5rem 0.6rem;
           }
 
@@ -98,7 +98,7 @@ function SearchBar() {
 
         @media (max-width: 600px) {
           .search-form {
-            max-width: 280px;
+            max-width: 350px;
             min-width: 160px;
             padding: 0.45rem 0.5rem;
           }
