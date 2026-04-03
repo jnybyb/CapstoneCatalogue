@@ -111,11 +111,15 @@ function Header() {
           }
 
           .brand-text h1 {
-            font-size: 1.4rem;
+            font-size: 1.6rem;
+            margin-bottom: 0.1rem;
           }
 
           .subtitle {
-            display: none;
+            font-size: 0.5rem;
+            max-width: 240px;
+            margin: 0;
+            line-height: 1.1;
           }
         }
 
