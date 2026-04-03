@@ -2,8 +2,39 @@ import Header from '../components/Header';
 import Footer from '../components/Footer';
 import SearchBar from '../components/SearchBar';
 import AddProject from '../components/AddProjectButton';
+import ProjectTable from '../components/ProjectTable';
 
 function Catalog() {
+  const sampleProjects = [
+    {
+      number: "1",
+      bookNumber: "B001",
+      title: "AI-Powered Learning Platform",
+      names: "John Smith, Jane Doe",
+      adviser: "Dr. Robert Johnson",
+      coordinator: "Dr. Maria Garcia",
+      date: "2024-04-03"
+    },
+    {
+      number: "2",
+      bookNumber: "B002",
+      title: "Mobile Health Tracking App",
+      names: "Michael Chen, Sarah Williams",
+      adviser: "Dr. James Lee",
+      coordinator: "Dr. Patricia Brown",
+      date: "2024-03-28"
+    },
+    {
+      number: "3",
+      bookNumber: "B003",
+      title: "Sustainable Energy Management System",
+      names: "David Martinez, Emily Davis",
+      adviser: "Dr. Thomas Wilson",
+      coordinator: "Dr. Angela Rodriguez",
+      date: "2024-03-15"
+    }
+  ];
+
   return (
     <>
       <main className="catalog-main">
@@ -16,11 +47,13 @@ function Catalog() {
           </div>
         </div>
 
+        <ProjectTable projects={sampleProjects} />
+
       </main>
 
       <style>{`
         .catalog-main {
-          padding: 1rem 1.5rem;
+          padding: 0.5rem 2rem;
         }
 
         .catalog-header {

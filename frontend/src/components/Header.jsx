@@ -39,7 +39,7 @@ function Header() {
         .header-content {
           width: 100%;
           margin: 0;
-          padding: 0.8rem 2rem 0.35rem 2rem;
+          padding: 0.8rem 2rem 0.45rem 2rem;
           display: flex;
           align-items: center;
           box-sizing: border-box;
