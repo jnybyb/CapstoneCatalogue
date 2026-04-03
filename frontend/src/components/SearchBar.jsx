@@ -1,7 +1,17 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 function SearchBar() {
   const [searchQuery, setSearchQuery] = useState("");
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 600);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth <= 600);
+    };
+
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   const handleSearch = (e) => {
     setSearchQuery(e.target.value);
@@ -31,7 +41,7 @@ function SearchBar() {
         </svg>
         <input
           type="text"
-          placeholder="Search titles, authors, or keywords..."
+          placeholder={isMobile ? "Search title, author..." : "Search titles, authors, or keywords..."}
           value={searchQuery}
           onChange={handleSearch}
           className="search-input"
