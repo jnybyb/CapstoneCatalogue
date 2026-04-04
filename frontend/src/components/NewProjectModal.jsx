@@ -527,7 +527,7 @@ textarea::placeholder {
   overflow-y:auto;
   overflow-x:hidden;
   -webkit-overflow-scrolling:touch;
-  padding:1rem 1.25rem 0.5rem;
+  padding:1.45rem 1.25rem;
 }
 
 .modal-form-footer {
