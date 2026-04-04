@@ -753,7 +753,7 @@ textarea {
   }
 
   .modal-form-body {
-    padding:0.85rem 1rem 0.4rem;
+    padding:1.2rem;
   }
 
   .modal-form-footer {
