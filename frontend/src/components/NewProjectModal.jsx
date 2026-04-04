@@ -445,9 +445,9 @@ textarea::placeholder {
   overflow-x:hidden;
   overscroll-behavior:contain;
   padding:max(0.75rem, env(safe-area-inset-top, 0px))
-          max(0.75rem, env(safe-area-inset-right, 0px))
+          max(0.60rem, env(safe-area-inset-right, 0px))
           max(0.75rem, env(safe-area-inset-bottom, 0px))
-          max(0.75rem, env(safe-area-inset-left, 0px));
+          max(0.60rem, env(safe-area-inset-left, 0px));
   box-sizing:border-box;
 }
 
@@ -725,7 +725,7 @@ textarea {
   border-radius:0.3rem;
   font-size:0.75rem;
   cursor:pointer;
-  margin-top:0;
+  margin:0;
   transition:background 0.2s;
   font-weight:500;
   letter-spacing:0.02em;
@@ -738,14 +738,14 @@ textarea {
 
 @media (max-width:767px) {
   .modal-content {
-    width:78vw;
+    width:84vw;
     max-width:85vw;
     max-height:min(88vh, calc(100vh - 1rem));
     max-height:min(88dvh, calc(100dvh - 1rem));
   }
 
   .add-project-modal__header {
-    padding:0.7rem 0.85rem 0.7rem 1rem;
+    padding:0.95rem 0.85rem 0.7rem 1rem;
   }
 
   .add-project-modal__header h2 {
