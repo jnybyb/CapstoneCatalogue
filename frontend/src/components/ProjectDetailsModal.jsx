@@ -247,6 +247,7 @@ function ProjectDetailsModal({ project, isOpen, onClose }) {
 
           .modal-content {
             width: 75vw;
+            height: 80vh;
             padding: 0.1rem 0.75rem;
           }
 

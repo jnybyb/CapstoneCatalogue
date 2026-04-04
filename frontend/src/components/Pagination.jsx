@@ -77,7 +77,7 @@ function Pagination({ currentPage, totalPages, totalItems, itemsPerPage, onPageC
           padding: 1rem 0.2rem;
           background: none;
           border-radius: 0.375rem;
-          margin-top: 0.3rem;
+          margin-top: 1.3rem;
           flex-wrap: wrap;
           position: sticky;
           bottom: 0;
