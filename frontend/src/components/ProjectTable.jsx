@@ -33,12 +33,12 @@ function ProjectTable({ projects = [] }) {
         <thead>
           <tr>
             <th></th>
-            <th>Book #</th>
+            <th className="hide-mobile">Book #</th>
             <th>Title</th>
             <th>Author</th>
-            <th>Adviser</th>
-            <th>Coordinator</th>
-            <th>Date</th>
+            <th className="hide-mobile">Adviser</th>
+            <th className="hide-mobile">Coordinator</th>
+            <th className="hide-mobile">Date</th>
           </tr>
         </thead>
         <tbody>
@@ -51,12 +51,12 @@ function ProjectTable({ projects = [] }) {
                 style={{ cursor: "pointer" }}
               >
                 <td>{project.number || "-"}</td>
-                <td>{project.bookNumber || "-"}</td>
+                <td className="hide-mobile">{project.bookNumber || "-"}</td>
                 <td>{project.title || "-"}</td>
                 <td className="authors-cell">{renderAuthors(project.names)}</td>
-                <td>{project.adviser || "-"}</td>
-                <td>{project.coordinator || "-"}</td>
-                <td>{project.date ? formatDate(project.date) : "-"}</td>
+                <td className="hide-mobile">{project.adviser || "-"}</td>
+                <td className="hide-mobile">{project.coordinator || "-"}</td>
+                <td className="hide-mobile">{project.date ? formatDate(project.date) : "-"}</td>
               </tr>
             ))
           ) : (
@@ -84,6 +84,8 @@ function ProjectTable({ projects = [] }) {
           font-family: 'Inter', sans-serif;
           border-radius: 0.2rem;
           overflow: hidden;
+          table-layout: auto;
+          word-wrap: break-word;
         }
 
         .project-table thead {
@@ -102,6 +104,7 @@ function ProjectTable({ projects = [] }) {
           letter-spacing: 0.01em;
           border-top: 1px solid #babfca59;
           border-bottom: 1px solid #babfcab9;
+          word-wrap: break-word;
         }
 
         .project-table th:first-child {
@@ -129,12 +132,15 @@ function ProjectTable({ projects = [] }) {
           font-size: 0.65rem;
           color: #2d3b4e;
           border-bottom: 1px solid #babfca4e;
+          word-wrap: break-word;
+          overflow-wrap: break-word;
         }
 
         .authors-cell {
           display: flex;
           flex-direction: column;
           gap: 0.25rem;
+          word-wrap: break-word;
         }
 
         .project-table td:first-child {
@@ -185,6 +191,7 @@ function ProjectTable({ projects = [] }) {
             padding: 1rem 0.4rem !important;
           }
         }
+      
       `}</style>
     </>
   );

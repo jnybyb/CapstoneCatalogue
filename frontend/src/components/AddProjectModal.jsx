@@ -1,23 +1,29 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 function AddProjectModal({ isOpen, onClose, onAdd }) {
 
-  const [form, setForm] = useState({
+  const initialForm = {
     bookNum: "",
     title: "",
     authors: ["", "", ""],
-    course: "",
     month: "",
     year: "",
     adviser: "",
+    coordinators: [""],
     panels: ["", "", ""],
-    coordinator: "",
     programHead: "",
     dean: "",
-    abstract: "",
-    bookType: "Hard Bound",
-    photo: null,
-  });
+    abstractImage: null,
+    bookType: "",
+  };
+
+  const [form, setForm] = useState(initialForm);
+
+  useEffect(() => {
+    if (!isOpen) {
+      setForm(initialForm);
+    }
+  }, [isOpen]);
 
   if (!isOpen) return null;
 
@@ -50,10 +56,10 @@ function AddProjectModal({ isOpen, onClose, onAdd }) {
     });
   };
 
-  const handlePhotoChange = (e) => {
+  const handleImageChange = (field) => (e) => {
     setForm(prev => ({
       ...prev,
-      photo: e.target.files[0]
+      [field]: e.target.files[0]
     }));
   };
 
@@ -103,7 +109,7 @@ function AddProjectModal({ isOpen, onClose, onAdd }) {
                   name="title"
                   value={form.title}
                   onChange={handleChange}
-                  placeholder="Project title"
+                  placeholder="Enter Project Title"
                   required
                 />
               </div>
@@ -135,9 +141,10 @@ function AddProjectModal({ isOpen, onClose, onAdd }) {
                         handleArrayChange("authors", idx, e.target.value)
                       }
                       placeholder={`Author ${idx + 1}`}
+                      required={idx === 0}
                     />
 
-                    {idx >= 3 && (
+                    {form.authors.length > 3 && (
                       <button
                         type="button"
                         className="remove-btn"
@@ -162,7 +169,7 @@ function AddProjectModal({ isOpen, onClose, onAdd }) {
                   name="adviser"
                   value={form.adviser}
                   onChange={handleChange}
-                  placeholder="Adviser name"
+                  placeholder="Enter Adviser Name"
                   required
                 />
               </div>
@@ -171,36 +178,52 @@ function AddProjectModal({ isOpen, onClose, onAdd }) {
               {/* COORDINATOR */}
 
               <div className="form-group">
-                <label className="form-label">
-                  Thesis Coordinator <span className="required">*</span>
-                </label>
+                <div className="section-header">
+                  <label className="form-label">
+                    Thesis Coordinator <span className="required">*</span>
+                  </label>
 
-                <input
-                  name="coordinator"
-                  value={form.coordinator}
-                  onChange={handleChange}
-                  placeholder="Coordinator name"
-                  required
-                />
+                  <button
+                    type="button"
+                    className="add-btn-header"
+                    onClick={() => handleAddField("coordinators")}
+                  >
+                    + Add
+                  </button>
+                </div>
+
+                {form.coordinators.map((coordinator, idx) => (
+                  <div key={idx} className="input-with-remove">
+                    <input
+                      type="text"
+                      value={coordinator}
+                      onChange={(e) =>
+                        handleArrayChange("coordinators", idx, e.target.value)
+                      }
+                      placeholder="Enter Coordinator Name"
+                      required={idx === 0}
+                    />
+
+                    {form.coordinators.length > 1 && (
+                      <button
+                        type="button"
+                        className="remove-btn"
+                        onClick={() => handleRemoveField("coordinators", idx)}
+                      >
+                        ×
+                      </button>
+                    )}
+                  </div>
+                ))}
               </div>
 
 
               {/* PANEL MEMBERS */}
 
               <div className="form-group">
-                <div className="section-header">
-                  <label className="form-label">
-                    Panel Members
-                  </label>
-
-                  <button
-                    type="button"
-                    className="add-btn-header"
-                    onClick={() => handleAddField("panels")}
-                  >
-                    + Add
-                  </button>
-                </div>
+                <label className="form-label">
+                  Panel Members
+                </label>
 
                 {form.panels.map((panel, idx) => (
                   <div key={idx} className="input-with-remove">
@@ -210,10 +233,12 @@ function AddProjectModal({ isOpen, onClose, onAdd }) {
                       onChange={(e) =>
                         handleArrayChange("panels", idx, e.target.value)
                       }
-                      placeholder={`Panel member ${idx + 1}`}
+                      placeholder={
+                        idx === 0 ? "Chair Panel" : `Panel member ${idx}`
+                      }
                     />
 
-                    {idx >= 3 && (
+                    {form.panels.length > 3 && (
                       <button
                         type="button"
                         className="remove-btn"
@@ -245,6 +270,7 @@ function AddProjectModal({ isOpen, onClose, onAdd }) {
                   value={form.bookType}
                   onChange={handleChange}
                 >
+                  <option value="">Select Book Type</option>
                   <option value="Hard Bound">Hard Bound</option>
                   <option value="Soft Bound">Soft Bound</option>
                 </select>
@@ -263,6 +289,7 @@ function AddProjectModal({ isOpen, onClose, onAdd }) {
                     name="month"
                     value={form.month}
                     onChange={handleChange}
+
                     required
                   >
                     <option value="">Month</option>
@@ -299,27 +326,6 @@ function AddProjectModal({ isOpen, onClose, onAdd }) {
               </div>
 
 
-              {/* COURSE */}
-
-              <div className="form-group">
-                <label className="form-label">
-                  Course
-                </label>
-
-                <select
-                  name="course"
-                  value={form.course}
-                  onChange={handleChange}
-                >
-                  <option value="">Select Course</option>
-                  <option value="BSIT">BSIT</option>
-                  <option value="BITM">BITM</option>
-                  <option value="BSCE">BSCE</option>
-                  <option value="BSMRS">BSMRS</option>
-                </select>
-              </div>
-
-
               {/* PROGRAM HEAD */}
 
               <div className="form-group">
@@ -331,7 +337,7 @@ function AddProjectModal({ isOpen, onClose, onAdd }) {
                   name="programHead"
                   value={form.programHead}
                   onChange={handleChange}
-                  placeholder="Program Head name"
+                  placeholder="Enter Name"
                   required
                 />
               </div>
@@ -348,24 +354,47 @@ function AddProjectModal({ isOpen, onClose, onAdd }) {
                   name="dean"
                   value={form.dean}
                   onChange={handleChange}
-                  placeholder="Dean name"
+                  placeholder="Enter Name"
                   required
                 />
               </div>
 
 
-              {/* ABSTRACT */}
+              {/* ABSTRACT IMAGE */}
 
               <div className="form-group">
                 <label className="form-label">
                   Abstract
                 </label>
 
-                <textarea
-                  name="abstract"
-                  value={form.abstract}
-                  onChange={handleChange}
-                  placeholder="Project abstract"
+                <div className="image-placeholder">
+                  {form.abstractImage ? (
+                    <img
+                      src={URL.createObjectURL(form.abstractImage)}
+                      alt="Abstract preview"
+                      className="preview-image"
+                    />
+                  ) : (
+                    <div className="placeholder-content">
+                      <svg
+                        className="placeholder-icon"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                      >
+                        <circle cx="9" cy="9" r="2" />
+                        <path d="M21 15a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+                        <polyline points="21 15 16 10 5 21" />
+                      </svg>
+                    </div>
+                  )}
+                </div>
+
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleImageChange("abstractImage")}
+                  className="choose-photo-btn"
                 />
               </div>
 
@@ -392,7 +421,10 @@ function AddProjectModal({ isOpen, onClose, onAdd }) {
 
 input::placeholder,
 textarea::placeholder {
-  color:#aaa;
+  color:#999;
+  font-size:0.7rem;
+  font-weight:400;
+  font-family:inherit;
 }
 
 .modal-overlay {
@@ -403,14 +435,14 @@ textarea::placeholder {
   align-items:center;
   justify-content:center;
   z-index:1000;
+  overflow-y:auto;
+  padding:1rem 0;
 }
 
 .modal-content {
   background:#fff;
-  padding:1.7rem 2rem;
+  padding: 1.35rem;
   border-radius:0.5rem;
-  width:35vw;
-  max-height:94vh;
   overflow-y:auto;
   box-shadow:0 2px 16px rgba(0,0,0,0.15);
   position:relative;
@@ -435,7 +467,7 @@ textarea::placeholder {
 
 h2 {
   margin:0 0 1.5rem 0;
-  font-size:1.35rem;
+  font-size:1.15rem;
   font-weight:800;
   font-family:'DM Serif Display', serif;
   letter-spacing:0.02em;
@@ -444,44 +476,37 @@ h2 {
 .add-project-form {
   display:flex;
   flex-direction:column;
-  gap:0.65rem;
+  gap:0.2rem;
 }
 
 .form-container {
   display:grid;
-  grid-template-columns:1fr;
-  gap:1.4rem;
+  grid-template-columns:1fr 1fr;
+  gap:0.7rem;
 }
 
 .form-column {
   display:flex;
   flex-direction:column;
-  gap:0.75rem;
+  gap:0.8rem;
 }
 
 .form-group {
   display:flex;
   flex-direction:column;
-  gap:0.25rem;
+  gap:0.15rem;
 }
 
 .form-label {
   font-size:0.75rem;
   font-weight:600;
   letter-spacing:0.02em;
-  color:#1f2937;
+  color: #1f2937;
 }
 
 .required {
-  color:#dc2626;
+  color: #dc2626;
   margin-left:0.05rem;
-}
-
-.member-count {
-  font-weight:400;
-  font-size:0.85rem;
-  color:#6b7280;
-  margin-left:0.4rem;
 }
 
 .section-header {
@@ -495,7 +520,7 @@ h2 {
   border:none;
   color: #1E293B;
   cursor:pointer;
-  font-size:0.78rem;
+  font-size:0.65rem;
   padding:0;
   font-weight:600;
   font-family:DM Serif Display, serif;
@@ -506,10 +531,61 @@ h2 {
   color: #1c41a8d8;
 }
 
+.choose-photo-btn {
+  padding:0.3rem 0.4rem;
+  border:1px solid #d1d5db;
+  border-radius:0.3rem;
+  font-family:inherit;
+  font-size:0.55rem;
+  color:#1f2937;
+  background:#fff;
+  cursor:pointer;
+  margin-top:0.3rem;
+}
+
+.choose-photo-btn:hover {
+  background:#f9fafb;
+  border-color:#999;
+}
+
+.image-placeholder {
+  width:100%;
+  height:150px;
+  background:#e5e7eb;
+  border:1px solid #d1d5db;
+  border-radius:0.3rem;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  overflow:hidden;
+}
+
+.placeholder-content {
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  width:100%;
+  height:100%;
+  color: #2b3d5e;
+}
+
+.placeholder-icon {
+  width:80px;
+  height:80px;
+  color: #d1d5db;
+  stroke-width:1;
+}
+
+.preview-image {
+  width:100%;
+  height:100%;
+  object-fit: cover;
+}
+
 .form-row-inline {
   display:grid;
   grid-template-columns:1fr 1fr;
-  gap:1rem;
+  gap:1.3rem;
 }
 
 input,
@@ -520,7 +596,7 @@ select {
   border-radius:0.3rem;
   font-family:inherit;
   font-size:0.7rem;
-  color: #1f2937;
+  color: #2a2c47;
   background:#fff;
 }
 
@@ -539,7 +615,7 @@ textarea {
 
 .input-with-remove {
   display:flex;
-  gap:0.2rem;
+  gap:0.1rem;
   align-items:center;
 }
 
@@ -566,26 +642,6 @@ textarea {
     transform: translateY(-2.5px);
 }
 
-.radio-group {
-  display:flex;
-  gap:1rem;
-}
-
-.radio-label {
-  display:flex;
-  gap:0.2rem;
-  margin:0;
-  cursor:pointer;
-  font-weight:400;
-  font-size:0.7rem;
-}
-
-.radio-label input[type="radio"] {
-  margin:0;
-  width:auto;
-  cursor:pointer;
-}
-
 .file-input {
   padding:0.4rem 0.5rem;
 }
@@ -605,23 +661,56 @@ textarea {
   background:#1B212D;
   color:white;
   border:none;
-  padding:0.5rem 1.5rem;
-  border-radius:0.375rem;
-  font-size:0.95rem;
+  padding:0.5rem 2rem;
+  border-radius:0.3rem;
+  font-size:0.75rem;
   cursor:pointer;
-  margin-top:0.5rem;
+  margin-top: 2rem;
   transition:background 0.2s;
-  align-self:flex-start;
+  align-self:flex-end;
   font-weight:500;
+  letter-spacing:0.02em;
 }
 
 .submit-btn:hover {
   background:#0d0f15;
 }
 
-@media (max-width:1000px) {
+@media (max-width:767px) {
   .modal-content {
-    width:85vw;
+    width:75vw;
+    max-width:85w;
+    margin:1rem auto;
+    padding:1rem;
+    max-height:70vh;
+  }
+
+  h2 {
+    font-size:1.2rem;
+  }
+
+  .form-label {
+    font-size:0.8rem;
+  }
+
+  .add-btn-header {
+    font-size:0.75rem;
+  }
+
+  input::placeholder,
+  textarea::placeholder {
+    font-size:0.75rem;
+  }
+
+  input,
+  textarea,
+  select {
+    font-size:0.75rem;
+    padding:0.5rem 0.6rem;
+  }
+
+  textarea {
+    min-height:2.5rem;
   }
 
   .form-container {
@@ -633,21 +722,36 @@ textarea {
     grid-template-columns:1fr;
     gap:0.8rem;
   }
-}
 
-@media (max-width:600px) {
-  .modal-content {
-    width:95vw;
-    padding:1rem;
+  .image-placeholder {
+    height:120px;
   }
 
-  .form-container {
-    grid-template-columns:1fr;
-    gap:0.65rem;
+  .placeholder-icon {
+    width:60px;
+    height:60px;
+  }
+}
+
+@media (min-width:768px) and (max-width:1023px) {
+  .modal-content {
+    width:70vw;
   }
 
   .form-row-inline {
-    grid-template-columns:1fr;
+    grid-template-columns:1fr 1fr;
+    gap:1rem;
+  }
+}
+
+@media (min-width:1024px) {
+  .modal-content {
+    width:43vw;
+  }
+
+  .form-row-inline {
+    grid-template-columns:1fr 1fr;
+    gap:1rem;
   }
 }
 
