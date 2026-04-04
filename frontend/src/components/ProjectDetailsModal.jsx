@@ -245,17 +245,26 @@ function ProjectDetailsModal({ project, isOpen, onClose }) {
 
         @media (max-width: 600px) {
 
+          .modal-content {
+            width: 75vw;
+            padding: 0.1rem 0.75rem;
+          }
+
+          .document-preview {
+            padding: 1.5rem 1rem;
+          }
+
           .doc-staff {
             grid-template-columns: 1fr;
             gap: 1rem;
           }
 
           .doc-title {
-            font-size: 1.1rem;
+            font-size: 1.25rem;
           }
 
           .abstract-text {
-            font-size: 0.7rem;
+            font-size: 1rem;
           }
 
         }
