@@ -454,7 +454,7 @@ textarea::placeholder {
 .modal-content {
   background:#fff;
   padding:0;
-  border-radius:1.5rem;
+  border-radius:0.8rem;
   overflow:hidden;
   box-shadow:0 2px 16px rgba(0,0,0,0.15);
   position:relative;
