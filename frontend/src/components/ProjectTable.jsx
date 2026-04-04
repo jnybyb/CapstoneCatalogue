@@ -1,4 +1,10 @@
+import React, { useState } from "react";
+import ProjectDetailsModal from "./ProjectDetailsModal";
+
 function ProjectTable({ projects = [] }) {
+  const [selectedProject, setSelectedProject] = useState(null);
+  const [modalOpen, setModalOpen] = useState(false);
+
   const formatDate = (dateString) => {
     const date = new Date(dateString);
     return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
@@ -9,6 +15,16 @@ function ProjectTable({ projects = [] }) {
     return names.split(',').map((name, idx) => (
       <div key={idx}>{idx + 1}. {name.trim()}</div>
     ));
+  };
+
+  const handleRowClick = (project) => {
+    setSelectedProject(project);
+    setModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setModalOpen(false);
+    setSelectedProject(null);
   };
 
   return (
@@ -28,7 +44,12 @@ function ProjectTable({ projects = [] }) {
         <tbody>
           {projects.length > 0 ? (
             projects.map((project, index) => (
-              <tr key={index}>
+              <tr
+                key={index}
+                className="clickable-row"
+                onClick={() => handleRowClick(project)}
+                style={{ cursor: "pointer" }}
+              >
                 <td>{project.number || "-"}</td>
                 <td>{project.bookNumber || "-"}</td>
                 <td>{project.title || "-"}</td>
@@ -48,6 +69,12 @@ function ProjectTable({ projects = [] }) {
         </tbody>
       </table>
 
+      <ProjectDetailsModal
+        project={selectedProject}
+        isOpen={modalOpen}
+        onClose={handleCloseModal}
+      />
+
       <style>{`
         .project-table {
           width: 100%;
@@ -55,12 +82,12 @@ function ProjectTable({ projects = [] }) {
           border-spacing: 0;
           background-color: #ffffff;
           font-family: 'Inter', sans-serif;
-          border-radius: 0.5rem;
+          border-radius: 0.2rem;
           overflow: hidden;
         }
 
         .project-table thead {
-          background-color: #686d7551;
+          background-color: #686d752a;
           color: #1f2937;
           position: sticky;
           top: 0;
@@ -73,33 +100,35 @@ function ProjectTable({ projects = [] }) {
           font-weight: 600;
           font-size: 0.65rem;
           letter-spacing: 0.01em;
-          border-top: 1px solid #babfca;
-          border-bottom: 1px solid #babfca;
+          border-top: 1px solid #babfca59;
+          border-bottom: 1px solid #babfcab9;
         }
 
         .project-table th:first-child {
-          border-left: 1px solid #babfca;
+          border-left: 1px solid #babfcab9;
           border-top-left-radius: 0.5rem;
         }
 
         .project-table th:last-child {
-          border-right: 1px solid #babfca;
+          border-right: 1px solid #babfcab9;
           border-top-right-radius: 0.5rem;
         }
 
         .project-table tbody tr {
-          border-bottom: 1px solid #e2e8f0;
+          border-bottom: 1px solid #babfca;
           transition: background-color 0.2s ease;
         }
 
-        .project-table tbody tr:hover {
-          background-color: #e4e6e8;
+
+        .project-table tbody tr.clickable-row:hover {
+          background-color: #e4e6e853;
         }
 
         .project-table td {
-          padding: 0.3rem 0.6rem;
+          padding: 0.4rem 0.6rem;
           font-size: 0.65rem;
           color: #2d3b4e;
+          border-bottom: 1px solid #babfca4e;
         }
 
         .authors-cell {

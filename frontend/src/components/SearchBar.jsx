@@ -56,8 +56,8 @@ function SearchBar() {
           gap: 0.5rem;
           background: #ffffff;
           border: 1.5px solid #1E293B;
-          border-radius: 0.5rem;
-          padding: 0.5rem 0.7rem;
+          border-radius: 0.4rem;
+          padding: 0.5rem 0.5rem;
           transition: border-color 0.3s ease, box-shadow 0.3s ease;
           width: 100%;
           max-width: 600px;
@@ -70,8 +70,8 @@ function SearchBar() {
         }
 
         .search-icon {
-          width: 17px;
-          height: 17px;
+          width: 14px;
+          height: 14px;
           color: #6b7280;
           flex-shrink: 0;
         }
@@ -81,7 +81,7 @@ function SearchBar() {
           border: none;
           outline: none;
           font-family: 'Inter', sans-serif;
-          font-size: 0.85rem;
+          font-size: 0.65rem;
           color: #1f2937;
           background: transparent;
         }

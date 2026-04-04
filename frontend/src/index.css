@@ -113,7 +113,7 @@ button {
 main {
   flex: 1;
   width: 100%;
-  padding: 1rem;
+  padding: 0.5rem 1rem;
 }
 
 /* ========== MOBILE FIRST (Default - Phone: 320px - 599px) ========== */
@@ -195,7 +195,7 @@ main {
   }
 
   main {
-    padding: 1.5rem;
+    padding: 0.5rem 1.5rem;
   }
 }
 
@@ -223,7 +223,7 @@ main {
   }
 
   main {
-    padding: 1rem;
+    padding: 0.5rem 1rem;
   }
 }
 
@@ -251,13 +251,13 @@ main {
   }
 
   main {
-    padding: 1.5rem;
+    padding: 1.5rem 2.5rem;
   }
 }
 
 /* ========== SCROLLBAR STYLING ========== */
 ::-webkit-scrollbar {
-  width: 10px;
+  width: 5px;
   height: 10px;
 }
 

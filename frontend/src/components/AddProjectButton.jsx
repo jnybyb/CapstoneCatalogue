@@ -1,7 +1,21 @@
+import React, { useState } from "react";
+import AddProjectModal from "./AddProjectModal";
+
 function AddProject() {
+  const [modalOpen, setModalOpen] = useState(false);
+
   const handleAddProject = () => {
-    console.log("Add Project clicked");
-    // Add project modal or navigation logic here
+    setModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setModalOpen(false);
+  };
+
+  const handleAdd = (projectData) => {
+    // You can handle the new project data here (e.g., send to API or update state)
+    // For now, just log it
+    console.log("New Project Data:", projectData);
   };
 
   return (
@@ -11,23 +25,25 @@ function AddProject() {
         <span className="btn-text">Add Project</span>
       </button>
 
+      <AddProjectModal isOpen={modalOpen} onClose={handleCloseModal} onAdd={handleAdd} />
+
       <style>{`
         .add-project-btn {
           display: flex;
           align-items: center;
           gap: 0.5rem;
-          padding: 0.45rem 1.8rem;
+          padding: 0.25rem 1.2rem;
           background: #1e293b;
           color: #ffffff;
           border: none;
           border-radius: 100px;
           font-family: 'Inter', sans-serif;
-          font-size: 0.75rem;
+          font-size: 0.6rem;
           font-weight: 500;
           cursor: pointer;
           transition: all 0.3s ease;
           white-space: nowrap;
-          min-height: 38px;
+          min-height: 30px;
         }
 
         .add-project-btn:hover {
@@ -42,8 +58,8 @@ function AddProject() {
         }
 
         .plus-icon {
-          font-size: 0.78rem;
-          font-weight: 700;
+          font-size: 0.75rem;
+          font-weight: 400;
         }
 
         .btn-text {
