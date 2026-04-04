@@ -37,9 +37,10 @@ function Pagination({ currentPage, totalPages, totalItems, itemsPerPage, onPageC
         Showing {startItem}-{endItem} of {totalItems}
       </div>
 
-      <div className="pagination-wrapper">
+      <div className="pagination-wrapper pagination-desktop-nav">
         <button
           className="pagination-back"
+          type="button"
           onClick={() => onPageChange(currentPage - 1)}
           disabled={currentPage === 1}
         >
@@ -50,6 +51,7 @@ function Pagination({ currentPage, totalPages, totalItems, itemsPerPage, onPageC
           {pages.map((page, idx) => (
             <button
               key={idx}
+              type="button"
               className={`pagination-number ${page === currentPage ? "active" : ""}`}
               onClick={() => typeof page === "number" && onPageChange(page)}
               disabled={page === "..."}
@@ -61,10 +63,35 @@ function Pagination({ currentPage, totalPages, totalItems, itemsPerPage, onPageC
 
         <button
           className="pagination-next"
+          type="button"
           onClick={() => onPageChange(currentPage + 1)}
           disabled={currentPage === totalPages}
         >
           Next &gt;
+        </button>
+      </div>
+
+      <div className="pagination-mobile-nav" aria-label="Page navigation">
+        <button
+          className="pagination-mobile-chevron"
+          type="button"
+          onClick={() => onPageChange(currentPage - 1)}
+          disabled={currentPage === 1 || totalPages < 1}
+          aria-label="Previous page"
+        >
+          &lt;
+        </button>
+        <span className="pagination-mobile-current" aria-current="page">
+          {totalPages < 1 ? "—" : currentPage}
+        </span>
+        <button
+          className="pagination-mobile-chevron"
+          type="button"
+          onClick={() => onPageChange(currentPage + 1)}
+          disabled={currentPage === totalPages || totalPages < 1}
+          aria-label="Next page"
+        >
+          &gt;
         </button>
       </div>
 
@@ -86,15 +113,67 @@ function Pagination({ currentPage, totalPages, totalItems, itemsPerPage, onPageC
         }
 
         .pagination-info {
-          font-size: 0.75rem;
+          font-size: 0.85rem;
           color: #1f2937;
           font-weight: 500;
+          flex-shrink: 1;
+          min-width: 0;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
         }
 
         .pagination-wrapper {
           display: flex;
           align-items: center;
           gap: 0.5rem;
+        }
+
+        .pagination-mobile-nav {
+          display: none;
+          align-items: center;
+          justify-content: center;
+          gap: 0.35rem;
+          flex-shrink: 0;
+        }
+
+        .pagination-mobile-chevron {
+          min-width: 2rem;
+          height: 32px;
+          padding: 0 0.5rem;
+          border: none;
+          background: transparent;
+          cursor: pointer;
+          font-size: 0.85rem;
+          font-weight: 600;
+          color: #1e293b;
+          transition: background 0.2s;
+          border-radius: 0.25rem;
+          line-height: 1;
+        }
+
+        .pagination-mobile-chevron:hover:not(:disabled) {
+          background: rgba(59, 131, 246, 0.08);
+        }
+
+        .pagination-mobile-chevron:disabled {
+          opacity: 0.45;
+          cursor: not-allowed;
+        }
+
+        .pagination-mobile-current {
+          min-width: 2rem;
+          height: 30px;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 0.8rem;
+          font-weight: 600;
+          color: #fff;
+          background: #1e293b;
+          border-radius: 0.25rem;
+          padding: 0 0.5rem;
+          font-variant-numeric: tabular-nums;
         }
 
         .pagination-back {
@@ -178,35 +257,28 @@ function Pagination({ currentPage, totalPages, totalItems, itemsPerPage, onPageC
           cursor: not-allowed;
         }
 
-        @media (max-width: 600px) {
+        @media (max-width: 767px) {
           .pagination {
-            gap: 0.25rem;
-            flex-direction: column;
-            align-items: flex-start;
+            flex-direction: row;
+            flex-wrap: nowrap;
+            align-items: center;
+            justify-content: space-between;
+            gap: 0.5rem;
             padding: 0.75rem 0.2rem;
           }
 
           .pagination-info {
-            font-size: 0.7rem;
+            font-size: 0.68rem;
+            flex: 1 1 auto;
+            min-width: 0;
           }
 
-          .pagination-wrapper {
-            width: 100%;
-            gap: 0.25rem;
+          .pagination-desktop-nav {
+            display: none !important;
           }
 
-          .pagination-back,
-          .pagination-next {
-            font-size: 0.75rem;
-            padding: 0 0.6rem;
-          }
-
-          .pagination-number {
-            font-size: 0.75rem;
-          }
-
-          .pagination-controls {
-            gap: 0.2rem;
+          .pagination-mobile-nav {
+            display: flex !important;
           }
         }
       `}</style>

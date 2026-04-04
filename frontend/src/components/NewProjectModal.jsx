@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useBodyScrollLock } from "../hooks/useBodyScrollLock";
 
 function AddProjectModal({ isOpen, onClose, onAdd }) {
 
@@ -24,6 +25,8 @@ function AddProjectModal({ isOpen, onClose, onAdd }) {
       setForm(initialForm);
     }
   }, [isOpen]);
+
+  useBodyScrollLock(isOpen);
 
   if (!isOpen) return null;
 
@@ -76,22 +79,29 @@ function AddProjectModal({ isOpen, onClose, onAdd }) {
       <div
         className="modal-content add-project-modal"
         onClick={e => e.stopPropagation()}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="add-project-modal-title"
       >
 
-        <button
-          className="modal-close"
-          onClick={onClose}
-        >
-          &times;
-        </button>
-
-        <h2>Add New Capstone Project</h2>
+        <header className="add-project-modal__header">
+          <h2 id="add-project-modal-title">Add New Capstone Project</h2>
+          <button
+            type="button"
+            className="modal-close"
+            onClick={onClose}
+            aria-label="Close"
+          >
+            &times;
+          </button>
+        </header>
 
         <form
           onSubmit={handleSubmit}
           className="add-project-form"
         >
 
+          <div className="modal-form-body">
           <div className="form-container">
 
             {/* LEFT COLUMN */}
@@ -360,7 +370,7 @@ function AddProjectModal({ isOpen, onClose, onAdd }) {
               </div>
 
 
-              {/* ABSTRACT IMAGE */}
+              {/* ABSTRACT (image upload) */}
 
               <div className="form-group">
                 <label className="form-label">
@@ -398,24 +408,20 @@ function AddProjectModal({ isOpen, onClose, onAdd }) {
                 />
               </div>
 
-            </div>
 
+            <div className="modal-form-footer">
+            <button
+              type="submit"
+              className="submit-btn"
+            >
+              Save
+            </button>
+        
           </div>
-
-
-          {/* SUBMIT */}
-
-          <button
-            type="submit"
-            className="submit-btn"
-          >
-            Save
-          </button>
-
-        </form>
-
-
-        {/* STYLE */}
+          </div>
+          </div>
+          </div>
+          </form>
 
         <style>{`
 
@@ -436,47 +442,101 @@ textarea::placeholder {
   justify-content:center;
   z-index:1000;
   overflow-y:auto;
-  padding:1rem 0;
+  overflow-x:hidden;
+  overscroll-behavior:contain;
+  padding:max(0.75rem, env(safe-area-inset-top, 0px))
+          max(0.75rem, env(safe-area-inset-right, 0px))
+          max(0.75rem, env(safe-area-inset-bottom, 0px))
+          max(0.75rem, env(safe-area-inset-left, 0px));
+  box-sizing:border-box;
 }
 
 .modal-content {
   background:#fff;
-  padding: 1.35rem;
-  border-radius:0.5rem;
-  overflow-y:auto;
+  padding:0;
+  border-radius:1.5rem;
+  overflow:hidden;
   box-shadow:0 2px 16px rgba(0,0,0,0.15);
   position:relative;
+  width:43vw;
+  max-width:calc(100vw - 1.5rem);
+  max-height:min(90vh, calc(100vh - 1.5rem));
+  max-height:min(90vh, calc(100dvh - 1.5rem));
+  display:flex;
+  flex-direction:column;
+  min-height:0;
+  margin:auto;
 }
 
-.modal-close {
-  position:absolute;
-  top:0.5rem;
-  right:0.5rem;
-  border:1px solid #e4e6e8;
-  border-radius:0.35rem;
-  background:none;
-  font-size:1.4rem;
-  cursor:pointer;
-  padding:0.1rem 0.5rem 0.4rem 0.5rem;
-  width:35px;
-  height:35px;
+.add-project-modal__header {
   display:flex;
   align-items:center;
-  justify-content:center;
+  justify-content:space-between;
+  gap:0.75rem;
+  flex-shrink:0;
+  padding:0.85rem 1rem 0.85rem 1.25rem;
+  border-bottom:1px solid #e8eaee;
+  background:#fff;
 }
 
-h2 {
-  margin:0 0 1.5rem 0;
+.add-project-modal__header h2 {
+  margin:0;
   font-size:1.15rem;
   font-weight:800;
   font-family:'DM Serif Display', serif;
   letter-spacing:0.02em;
+  color:#111827;
+  line-height:1.25;
+  flex:1;
+  min-width:0;
+}
+
+.modal-close {
+  flex-shrink:0;
+  border:1px solid #e4e6e8;
+  border-radius:0.35rem;
+  background:#fafbfc;
+  font-size:1.25rem;
+  line-height:1;
+  cursor:pointer;
+  padding:0;
+  width:32px;
+  height:32px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:#374151;
+}
+
+.modal-close:hover {
+  background:#f3f4f6;
+  border-color:#d1d5db;
 }
 
 .add-project-form {
   display:flex;
   flex-direction:column;
-  gap:0.2rem;
+  flex:1;
+  min-height:0;
+  overflow:hidden;
+}
+
+.modal-form-body {
+  flex:1;
+  min-height:0;
+  overflow-y:auto;
+  overflow-x:hidden;
+  -webkit-overflow-scrolling:touch;
+  padding:1rem 1.25rem 0.5rem;
+}
+
+.modal-form-footer {
+  flex-shrink:0;
+  padding:0.65rem 1.25rem 1rem;
+  background:#fff;
+  display:flex;
+  justify-content:flex-end;
+  align-items:center;
 }
 
 .form-container {
@@ -661,15 +721,15 @@ textarea {
   background:#1B212D;
   color:white;
   border:none;
-  padding:0.5rem 2rem;
+  padding:0.4rem 2rem 0.5rem 2rem;
   border-radius:0.3rem;
   font-size:0.75rem;
   cursor:pointer;
-  margin-top: 2rem;
+  margin-top:0;
   transition:background 0.2s;
-  align-self:flex-end;
   font-weight:500;
   letter-spacing:0.02em;
+  font-family:inherit;
 }
 
 .submit-btn:hover {
@@ -679,14 +739,25 @@ textarea {
 @media (max-width:767px) {
   .modal-content {
     width:78vw;
-    max-width:85w;
-    margin:1rem auto;
-    padding:1rem;
-    max-height:70vh;
+    max-width:85vw;
+    max-height:min(88vh, calc(100vh - 1rem));
+    max-height:min(88dvh, calc(100dvh - 1rem));
   }
 
-  h2 {
-    font-size:1.2rem;
+  .add-project-modal__header {
+    padding:0.7rem 0.85rem 0.7rem 1rem;
+  }
+
+  .add-project-modal__header h2 {
+    font-size:1.05rem;
+  }
+
+  .modal-form-body {
+    padding:0.85rem 1rem 0.4rem;
+  }
+
+  .modal-form-footer {
+    padding:0.55rem 1rem 0.85rem;
   }
 
   .form-label {
@@ -743,6 +814,7 @@ textarea {
 @media (min-width:768px) and (max-width:1023px) {
   .modal-content {
     width:70vw;
+    max-width:calc(100vw - 1.5rem);
   }
 
   .form-row-inline {

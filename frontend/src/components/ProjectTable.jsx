@@ -10,6 +10,13 @@ function ProjectTable({ projects = [] }) {
     return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
   };
 
+  const formatYear = (dateString) => {
+    if (!dateString) return "-";
+    const date = new Date(dateString);
+    if (Number.isNaN(date.getTime())) return "-";
+    return String(date.getFullYear());
+  };
+
   const renderAuthors = (names) => {
     if (!names) return "-";
     return names.split(',').map((name, idx) => (
@@ -32,13 +39,16 @@ function ProjectTable({ projects = [] }) {
       <table className="project-table">
         <thead>
           <tr>
-            <th></th>
-            <th className="hide-mobile">Book #</th>
+            <th className="project-table__num" scope="col" aria-label="No."></th>
+            <th>Book #</th>
             <th>Title</th>
-            <th>Author</th>
-            <th className="hide-mobile">Adviser</th>
-            <th className="hide-mobile">Coordinator</th>
-            <th className="hide-mobile">Date</th>
+            <th className="project-table__col-author">Author</th>
+            <th className="project-table__col-adviser">Adviser</th>
+            <th className="project-table__col-coordinator">Coordinator</th>
+            <th className="project-table__col-date">
+              <span className="project-table__head-full">Date</span>
+              <span className="project-table__head-year">Year</span>
+            </th>
           </tr>
         </thead>
         <tbody>
@@ -50,13 +60,20 @@ function ProjectTable({ projects = [] }) {
                 onClick={() => handleRowClick(project)}
                 style={{ cursor: "pointer" }}
               >
-                <td>{project.number || "-"}</td>
-                <td className="hide-mobile">{project.bookNumber || "-"}</td>
+                <td className="project-table__num">{project.number || "-"}</td>
+                <td>{project.bookNumber || "-"}</td>
                 <td>{project.title || "-"}</td>
-                <td className="authors-cell">{renderAuthors(project.names)}</td>
-                <td className="hide-mobile">{project.adviser || "-"}</td>
-                <td className="hide-mobile">{project.coordinator || "-"}</td>
-                <td className="hide-mobile">{project.date ? formatDate(project.date) : "-"}</td>
+                <td className="authors-cell project-table__col-author">{renderAuthors(project.names)}</td>
+                <td className="project-table__col-adviser">{project.adviser || "-"}</td>
+                <td className="project-table__col-coordinator">{project.coordinator || "-"}</td>
+                <td className="project-table__col-date">
+                  <span className="project-table__date-full">
+                    {project.date ? formatDate(project.date) : "-"}
+                  </span>
+                  <span className="project-table__date-year">
+                    {project.date ? formatYear(project.date) : "-"}
+                  </span>
+                </td>
               </tr>
             ))
           ) : (
@@ -143,9 +160,61 @@ function ProjectTable({ projects = [] }) {
           word-wrap: break-word;
         }
 
-        .project-table td:first-child {
+        .project-table th.project-table__num,
+        .project-table td.project-table__num {
+          text-align: center;
+          vertical-align: middle;
+          width: 2.75rem;
+          min-width: 2.75rem;
+          max-width: 3.25rem;
+          padding-left: 0.65rem;
+          padding-right: 0.65rem;
+          box-sizing: border-box;
+        }
+
+        .project-table td.project-table__num {
           font-weight: 500;
           color: #1B212D;
+          font-variant-numeric: tabular-nums;
+        }
+
+        .project-table__head-year,
+        .project-table__date-year {
+          display: none;
+        }
+
+        .project-table__head-full,
+        .project-table__date-full {
+          display: inline;
+        }
+
+        /* Tablet portrait & phone landscape: No., Book #, Title, Author, Year */
+        @media (min-width: 768px) and (max-width: 1024px) and (orientation: portrait),
+          (orientation: landscape) and (max-width: 932px) and (max-height: 500px) {
+          .project-table__col-adviser,
+          .project-table__col-coordinator {
+            display: none !important;
+          }
+
+          .project-table__head-full,
+          .project-table__date-full {
+            display: none !important;
+          }
+
+          .project-table__head-year,
+          .project-table__date-year {
+            display: inline !important;
+          }
+        }
+
+        /* Phone portrait: No., Book #, Title only */
+        @media (max-width: 767px) and (orientation: portrait) {
+          .project-table__col-author,
+          .project-table__col-adviser,
+          .project-table__col-coordinator,
+          .project-table__col-date {
+            display: none !important;
+          }
         }
 
         .no-data {
@@ -156,16 +225,22 @@ function ProjectTable({ projects = [] }) {
         }
 
         @media (max-width: 1024px) {
-          .project-table th,
-          .project-table td {
+          .project-table th:not(.project-table__num),
+          .project-table td:not(.project-table__num) {
             padding: 0.5rem 0.6rem;
             font-size: 0.75rem;
+          }
+          .project-table th.project-table__num,
+          .project-table td.project-table__num {
+            font-size: 0.75rem;
+            padding-left: 0.7rem;
+            padding-right: 0.7rem;
           }
         }
 
         @media (max-width: 768px) {
-          .project-table th,
-          .project-table td {
+          .project-table th:not(.project-table__num),
+          .project-table td:not(.project-table__num) {
             padding: 0.4rem 0.5rem;
             font-size: 0.7rem;
           }
@@ -173,17 +248,32 @@ function ProjectTable({ projects = [] }) {
           .project-table thead {
             font-size: 0.65rem;
           }
+
+          .project-table th.project-table__num,
+          .project-table td.project-table__num {
+            font-size: 0.7rem;
+            padding-left: 0.6rem;
+            padding-right: 0.6rem;
+          }
         }
 
         @media (max-width: 600px) {
-          .project-table th,
-          .project-table td {
+          .project-table th:not(.project-table__num),
+          .project-table td:not(.project-table__num) {
             padding: 0.35rem 0.4rem;
             font-size: 0.65rem;
           }
 
           .project-table thead {
             font-size: 0.6rem;
+          }
+
+          .project-table th.project-table__num,
+          .project-table td.project-table__num {
+            font-size: 0.65rem;
+            padding-left: 0.55rem;
+            padding-right: 0.55rem;
+            min-width: 2.5rem;
           }
 
           .no-data {

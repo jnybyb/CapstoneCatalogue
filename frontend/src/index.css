@@ -112,8 +112,12 @@ button {
 
 main {
   flex: 1;
+  min-height: 0;
   width: 100%;
   padding: 0.5rem 1rem;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
 }
 
 /* ========== MOBILE FIRST (Default - Phone: 320px - 599px) ========== */
@@ -305,19 +309,20 @@ main {
     display: none !important;
   }
 
-  /* Hide columns on mobile - show only Number, Title, Author */
-  .hide-mobile {
-    display: none !important;
-  }
-
   /* Responsive table styling for mobile */
   .project-table {
     table-layout: auto;
   }
 
-  .project-table td,
-  .project-table th {
+  .project-table td:not(.project-table__num),
+  .project-table th:not(.project-table__num) {
     padding: 0.35rem 0.4rem;
+    font-size: 0.6rem;
+  }
+
+  .project-table td.project-table__num,
+  .project-table th.project-table__num {
+    padding: 0.35rem 0.55rem;
     font-size: 0.6rem;
   }
 }

@@ -1,6 +1,9 @@
 import React from "react";
+import { useBodyScrollLock } from "../hooks/useBodyScrollLock";
 
 function ProjectDetailsModal({ project, isOpen, onClose }) {
+  useBodyScrollLock(Boolean(isOpen && project));
+
   if (!isOpen || !project) return null;
 
   return (
@@ -12,26 +15,29 @@ function ProjectDetailsModal({ project, isOpen, onClose }) {
 
         <div className="document-preview">
 
-          {/* TITLE */}
-          <h2 className="doc-title">
-            {project.title || "-"}
-          </h2>
+          <div className="document-preview__header">
+            {/* TITLE */}
+            <h2 className="doc-title">
+              {project.title || "-"}
+            </h2>
 
-          {/* DATE */}
-          <div className="doc-date">
-            {project.date
-              ? new Date(project.date).toLocaleDateString(
-                  "en-US",
-                  { month: "long", year: "numeric" }
-                )
-              : "-"}
+            {/* DATE */}
+            <div className="doc-date">
+              {project.date
+                ? new Date(project.date).toLocaleDateString(
+                    "en-US",
+                    { month: "long", year: "numeric" }
+                  )
+                : "-"}
+            </div>
+
+            {/* AUTHORS */}
+            <div className="doc-authors">
+              {project.names || "-"}
+            </div>
           </div>
 
-          {/* AUTHORS */}
-          <div className="doc-authors">
-            {project.names || "-"}
-          </div>
-
+          <div className="document-preview__scroll">
           {/* ADVISER / PANEL / COORDINATOR / PROGRAM HEAD / DEAN */}
           <div className="doc-staff">
             <div className="staff-column left-column">
@@ -98,6 +104,7 @@ function ProjectDetailsModal({ project, isOpen, onClose }) {
               <div className="abstract-text">No abstract available.</div>
             )}
           </div>
+          </div>
 
         </div>
       </div>
@@ -115,6 +122,7 @@ function ProjectDetailsModal({ project, isOpen, onClose }) {
           align-items: center;
           justify-content: center;
           z-index: 1000;
+          overscroll-behavior: contain;
         }
 
         .modal-content {
@@ -123,11 +131,14 @@ function ProjectDetailsModal({ project, isOpen, onClose }) {
           padding: 0.1rem 1rem;
           width: 40vw;
           max-width: 850px;
-          max-height: 90vh;
+          max-height: min(90vh, calc(100vh - 2rem));
+          max-height: min(90vh, calc(100dvh - 2rem));
+          min-height: 0;
           position: relative;
           box-shadow: 0 8px 24px rgba(0,0,0,0.2);
           display: flex;
           flex-direction: column;
+          overflow: hidden;
         }
 
         .modal-close {
@@ -137,8 +148,36 @@ function ProjectDetailsModal({ project, isOpen, onClose }) {
         .document-preview {
           padding: 2.5rem 1.5rem;
           flex: 1;
+          min-height: 0;
           display: flex;
           flex-direction: column;
+          overflow: hidden;
+        }
+
+        .document-preview__header {
+          flex-shrink: 0;
+          background: #f3f4f6;
+          position: relative;
+          z-index: 1;
+          padding-bottom: 0.35rem;
+        }
+
+        .document-preview__scroll {
+          flex: 1;
+          min-height: 0;
+          overflow-y: auto;
+          overflow-x: hidden;
+          -webkit-overflow-scrolling: touch;
+          overscroll-behavior: contain;
+          scrollbar-width: none;
+          -ms-overflow-style: none;
+          padding-top: 0.35rem;
+        }
+
+        .document-preview__scroll::-webkit-scrollbar {
+          display: none;
+          width: 0;
+          height: 0;
         }
 
         .doc-title {
@@ -160,11 +199,10 @@ function ProjectDetailsModal({ project, isOpen, onClose }) {
         .doc-authors {
           text-align: center;
           font-size: 0.9rem;
-          margin-bottom: 1.5rem;
+          margin-bottom: 0;
           font-weight: 600;
           font-family: 'DM Serif Display', serif;
           letter-spacing: 0.02em;
-          
         }
 
         .doc-staff {
@@ -221,19 +259,21 @@ function ProjectDetailsModal({ project, isOpen, onClose }) {
         }
 
         .doc-abstract {
-          min-height: 300px;
+          min-height: 200px;
           display: flex;
           align-items: center;
           justify-content: center;
           border: 1px solid #cbced4;
-          overflow-y: auto;
-          flex: 1;
+          padding: 0.5rem;
+          margin-top: 0.5rem;
         }
 
         .abstract-image {
           max-width: 100%;
+          width: 100%;
           height: auto;
           display: block;
+          object-fit: contain;
         }
 
         .abstract-text {
@@ -246,8 +286,9 @@ function ProjectDetailsModal({ project, isOpen, onClose }) {
         @media (max-width: 600px) {
 
           .modal-content {
-            width: 75vw;
-            height: 80vh;
+            width: 85vw;
+            max-height: min(85vh, calc(100vh - 1.5rem));
+            max-height: min(85dvh, calc(100dvh - 1.5rem));
             padding: 0.1rem 0.75rem;
           }
 
