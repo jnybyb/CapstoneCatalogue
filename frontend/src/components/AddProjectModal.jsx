@@ -678,7 +678,7 @@ textarea {
 
 @media (max-width:767px) {
   .modal-content {
-    width:75vw;
+    width:78vw;
     max-width:85w;
     margin:1rem auto;
     padding:1rem;
@@ -690,22 +690,22 @@ textarea {
   }
 
   .form-label {
-    font-size:0.8rem;
+    font-size:0.95rem;
   }
 
   .add-btn-header {
-    font-size:0.75rem;
+    font-size:0.65rem;
   }
 
   input::placeholder,
   textarea::placeholder {
-    font-size:0.75rem;
+    font-size:0.8rem;
   }
 
   input,
   textarea,
   select {
-    font-size:0.75rem;
+    font-size:0.85rem;
     padding:0.5rem 0.6rem;
   }
 
@@ -730,6 +730,13 @@ textarea {
   .placeholder-icon {
     width:60px;
     height:60px;
+  }
+
+  .modal-close {
+    width:28px;
+    height:28px;
+    font-size:1.2rem;
+    padding:0.1rem 0.3rem 0.2rem 0.3rem;
   }
 }
 
