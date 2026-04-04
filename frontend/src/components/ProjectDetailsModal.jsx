@@ -9,9 +9,6 @@ function ProjectDetailsModal({ project, isOpen, onClose }) {
         className="modal-content"
         onClick={(e) => e.stopPropagation()}
       >
-        <button className="modal-close" onClick={onClose}>
-          &times;
-        </button>
 
         <div className="document-preview">
 
@@ -35,33 +32,71 @@ function ProjectDetailsModal({ project, isOpen, onClose }) {
             {project.names || "-"}
           </div>
 
-          {/* ADVISER / PANEL / COORDINATOR */}
+          {/* ADVISER / PANEL / COORDINATOR / PROGRAM HEAD / DEAN */}
           <div className="doc-staff">
-            <div>
-              <strong>Adviser:</strong>
-              <div>{project.adviser || "-"}</div>
+            <div className="staff-column left-column">
+              <div className="staff-item">
+                <div className="staff-label">
+                  <strong>Adviser</strong>
+                </div>
+                <div className="staff-value">
+                  <span>{project.adviser || "-"}</span>
+                </div>
+              </div>
+
+              <div className="staff-item">
+                <div className="staff-label">
+                  <strong>Panel</strong>
+                </div>
+                <div className="panel-list">
+                  {project.panel
+                    ? project.panel.split(",").map((member, idx) => (
+                        <div key={idx} className="panel-member">
+                          <span>{member.trim()}</span>
+                        </div>
+                      ))
+                    : "-"}
+                </div>
+              </div>
             </div>
 
-            <div>
-              <strong>Panel:</strong>
-              <div>{project.panel || "-"}</div>
-            </div>
+            <div className="staff-column right-column">
+              <div className="staff-item">
+                <div className="staff-label">
+                  <strong>Coordinator</strong>
+                </div>
+                <div className="staff-value">
+                  <span>{project.coordinator || "-"}</span>
+                </div>
+              </div>
 
-            <div>
-              <strong>Coordinator:</strong>
-              <div>{project.coordinator || "-"}</div>
+              <div className="staff-item">
+                <div className="staff-label">
+                  <strong>Program Head</strong>
+                </div>
+                <div className="staff-value">
+                  <span>{project.programHead || "-"}</span>
+                </div>
+              </div>
+
+              <div className="staff-item">
+                <div className="staff-label">
+                  <strong>Dean</strong>
+                </div>
+                <div className="staff-value">
+                  <span>{project.dean || "-"}</span>
+                </div>
+              </div>
             </div>
           </div>
 
           {/* ABSTRACT BOX */}
           <div className="doc-abstract">
-            <div className="abstract-label">
-              Abstract
-            </div>
-
-            <div className="abstract-text">
-              {project.abstract || "No abstract available."}
-            </div>
+            {project.abstract ? (
+              <img src={project.abstract} alt="Abstract" className="abstract-image" />
+            ) : (
+              <div className="abstract-text">No abstract available.</div>
+            )}
           </div>
 
         </div>
@@ -75,7 +110,7 @@ function ProjectDetailsModal({ project, isOpen, onClose }) {
           left: 0;
           right: 0;
           bottom: 0;
-          background: rgba(0,0,0,0.4);
+          background: rgba(0,0,0,0.7);
           display: flex;
           align-items: center;
           justify-content: center;
@@ -84,80 +119,126 @@ function ProjectDetailsModal({ project, isOpen, onClose }) {
 
         .modal-content {
           background: #f3f4f6;
-          border-radius: 8px;
-          padding: 1.5rem;
-          width: 90vw;
+          border-radius: 6px;
+          padding: 0.1rem 1rem;
+          width: 40vw;
           max-width: 850px;
           max-height: 90vh;
-          overflow-y: auto;
           position: relative;
           box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+          display: flex;
+          flex-direction: column;
         }
 
         .modal-close {
-          position: absolute;
-          top: 10px;
-          right: 12px;
-          font-size: 1.5rem;
-          background: none;
-          border: none;
-          cursor: pointer;
+          display: none;
         }
 
-        /* DOCUMENT STYLE */
-
         .document-preview {
-          background: #ffffff;
-          padding: 2rem;
-          border: 1px solid #ccc;
+          padding: 2.5rem 1.5rem;
+          flex: 1;
+          display: flex;
+          flex-direction: column;
         }
 
         .doc-title {
           text-align: center;
           font-size: 1.4rem;
-          font-weight: bold;
-          margin-bottom: 0.5rem;
+          font-weight: 900;
+          margin-bottom: 0.7rem;
+          font-family: 'DM Serif Display', serif;
         }
 
         .doc-date {
           text-align: center;
-          font-size: 0.9rem;
-          margin-bottom: 1.5rem;
+          font-size: 0.75rem;
+          margin-bottom: 2.3rem;
+          font-family: 'DM Serif Display', serif;
+          font-style: italic;
         }
 
         .doc-authors {
           text-align: center;
           font-size: 0.9rem;
           margin-bottom: 1.5rem;
+          font-weight: 600;
+          font-family: 'DM Serif Display', serif;
+          letter-spacing: 0.02em;
+          
         }
 
         .doc-staff {
-          display: flex;
-          justify-content: space-between;
-          margin-bottom: 1.5rem;
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 2rem;
+          margin-bottom: 1rem;
           font-size: 0.85rem;
         }
 
-        .doc-staff > div {
-          width: 30%;
+        .staff-column {
+          display: flex;
+          flex-direction: column;
+          gap: .5rem;
+        }
+
+        .staff-item {
+          display: flex;
+          flex-direction: column;
+        }
+
+        .staff-label {
+          display: flex;
+          align-items: center;
+        }
+
+        .staff-value {
+          display: flex;
+          align-items: center;
+          color: #15253c;
+          font-family: 'DM Serif Display', serif;
+          font-size: .9rem;
+        }
+
+        .staff-item strong {
+          font-weight: 500;
+          color: #57575ab0;
+          font-size: 0.6rem;
+        }
+
+        .panel-list {
+          display: flex;
+          flex-direction: column;
+          gap: 0.2rem;
+        }
+
+        .panel-member {
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+          color: #4b5563;
+          font-size: 0.85rem;
+          font-family: 'DM Serif Display', serif;
         }
 
         .doc-abstract {
-          border: 1px solid #999;
-          padding: 1rem;
           min-height: 300px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          border: 1px solid #cbced4;
+          overflow-y: auto;
+          flex: 1;
         }
 
-        .abstract-label {
-          text-align: center;
-          font-weight: bold;
-          margin-bottom: 0.5rem;
+        .abstract-image {
+          max-width: 100%;
+          height: auto;
+          display: block;
         }
 
         .abstract-text {
           font-size: 0.85rem;
-          text-align: justify;
-          line-height: 1.5;
+          color: #4b5563;
         }
 
         /* MOBILE RESPONSIVE */
@@ -165,12 +246,8 @@ function ProjectDetailsModal({ project, isOpen, onClose }) {
         @media (max-width: 600px) {
 
           .doc-staff {
-            flex-direction: column;
-            gap: 10px;
-          }
-
-          .doc-staff > div {
-            width: 100%;
+            grid-template-columns: 1fr;
+            gap: 1rem;
           }
 
           .doc-title {
@@ -178,7 +255,7 @@ function ProjectDetailsModal({ project, isOpen, onClose }) {
           }
 
           .abstract-text {
-            font-size: 0.8rem;
+            font-size: 0.7rem;
           }
 
         }

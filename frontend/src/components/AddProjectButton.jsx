@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import AddProjectModal from "./AddProjectModal";
+import AddProjectModal from "./NewProjectModal";
 
 function AddProject() {
   const [modalOpen, setModalOpen] = useState(false);
