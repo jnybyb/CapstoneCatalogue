@@ -146,7 +146,7 @@ function ProjectDetailsModal({ project, isOpen, onClose }) {
         }
 
         .document-preview {
-          padding: 2.5rem 1.5rem;
+          padding: 2.42rem 1.5rem;
           flex: 1;
           min-height: 0;
           display: flex;
@@ -293,7 +293,7 @@ function ProjectDetailsModal({ project, isOpen, onClose }) {
           }
 
           .document-preview {
-            padding: 1.5rem 1rem;
+            padding: 2.42rem 1rem;
           }
 
           .doc-staff {
