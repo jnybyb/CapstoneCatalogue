@@ -250,17 +250,17 @@ function ProjectTable({ projects = [] }) {
         @media (max-width: 768px) {
           .project-table th:not(.project-table__num),
           .project-table td:not(.project-table__num) {
-            padding: 0.4rem 0.5rem;
-            font-size: 0.7rem;
+            padding: 0.5rem 0.6rem;
+            font-size: 0.85rem;
           }
 
           .project-table thead {
-            font-size: 0.65rem;
+            font-size: 0.75rem;
           }
 
           .project-table th.project-table__num,
           .project-table td.project-table__num {
-            font-size: 0.7rem;
+            font-size: 0.85rem;
             padding-left: 0.6rem;
             padding-right: 0.6rem;
           }
@@ -269,25 +269,25 @@ function ProjectTable({ projects = [] }) {
         @media (max-width: 600px) {
           .project-table th:not(.project-table__num),
           .project-table td:not(.project-table__num) {
-            padding: 0.35rem 0.4rem;
-            font-size: 0.65rem;
+            padding: 0.45rem 0.5rem;
+            font-size: 0.78rem;
           }
 
           .project-table thead {
-            font-size: 0.6rem;
+            font-size: 0.72rem;
           }
 
           .project-table th.project-table__num,
           .project-table td.project-table__num {
-            font-size: 0.65rem;
+            font-size: 0.78rem;
             padding-left: 0.55rem;
             padding-right: 0.55rem;
             min-width: 2.5rem;
           }
 
           .no-data {
-            font-size: 0.65rem;
-            padding: 1rem 0.4rem !important;
+            font-size: 0.78rem;
+            padding: 1.25rem 0.5rem !important;
           }
         }
       

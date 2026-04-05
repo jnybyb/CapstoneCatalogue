@@ -3,11 +3,34 @@ import Pagination from '../components/Pagination';
 import SearchBar from '../components/SearchBar';
 import AddProject from '../components/AddProjectButton';
 import ProjectTable from '../components/ProjectTable';
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 
 function Catalog() {
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 7;
+  const [itemsPerPage, setItemsPerPage] = useState(14);
+  const tableSlotRef = useRef(null);
+
+  useEffect(() => {
+    const calculateRowsPerPage = () => {
+      if (!tableSlotRef.current) return;
+
+      const viewportHeight = window.innerHeight;
+      const headerEstimate = 120; // Header + search + margin
+      const paginationEstimate = 60; // Pagination height + margin
+      const rowHeight = window.innerWidth <= 600 ? 85 : window.innerWidth <= 768 ? 95 : 70; // Responsive row height
+
+      const availableHeight = viewportHeight - headerEstimate - paginationEstimate;
+      const calculatedRows = Math.max(4, Math.floor(availableHeight / rowHeight));
+
+      setItemsPerPage(calculatedRows);
+      setCurrentPage(1);
+    };
+
+    calculateRowsPerPage();
+    window.addEventListener('resize', calculateRowsPerPage);
+    return () => window.removeEventListener('resize', calculateRowsPerPage);
+  }, []);
+
   const sampleProjects = [
     {
       number: "1",
@@ -181,7 +204,7 @@ function Catalog() {
           </div>
         </div>
 
-        <div className="catalog-table-slot">
+        <div className="catalog-table-slot" ref={tableSlotRef}>
           <ProjectTable projects={currentProjects} />
         </div>
 
@@ -207,8 +230,8 @@ function Catalog() {
         }
 
         .catalog-table-slot {
-          min-height: calc(100vh - 200px);
-          overflow: hidden;
+          flex: 1;
+          overflow-y: auto;
         }
 
         .catalog-pagination-host {
@@ -256,7 +279,8 @@ function Catalog() {
           }
 
           .catalog-table-slot {
-            min-height: calc(100vh - 400px);
+            flex: 1;
+            overflow-y: auto;
           }
 
           .catalog-header {
@@ -284,7 +308,8 @@ function Catalog() {
           }
 
           .catalog-table-slot {
-            min-height: calc(100vh - 400px);
+            flex: 1;
+            overflow-y: auto;
           }
 
           .catalog-header {
