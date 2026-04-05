@@ -144,7 +144,6 @@ main {
 
   main {
     padding: 1rem;
-    max-height: 90vh;
   }
 }
 
@@ -168,13 +167,12 @@ main {
 
   .container {
     max-width: 90vw;
-
+    
     padding: 0 1rem;
   }
 
   main {
     padding: 1rem;
-    max-height: 90vh;
   }
 }
 
@@ -204,7 +202,6 @@ main {
 
   main {
     padding: 1.2rem 1.5rem;
-    max-height: 90vh;
   }
 }
 
