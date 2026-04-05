@@ -286,6 +286,7 @@ function ProjectDetailsModal({ project, isOpen, onClose }) {
         @media (max-width: 1024px) and (min-width: 601px) {
           .modal-content {
             width: calc(100vw - 38vw);
+            height: calc(100vh - 20vw);
           }
         }
 
