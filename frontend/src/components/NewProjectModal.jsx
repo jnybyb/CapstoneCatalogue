@@ -68,7 +68,18 @@ function AddProjectModal({ isOpen, onClose, onAdd }) {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    onAdd && onAdd(form);
+
+    // Transform form data to match backend expectations
+    const projectData = {
+      bookNum: form.bookNum,
+      title: form.title,
+      authors: form.authors.filter(author => author.trim()).join(', '), // Join authors into a string
+      month: form.month,
+      year: form.year,
+      abstract: form.abstract || '' // Add abstract if it exists
+    };
+
+    onAdd && onAdd(projectData);
     onClose();
   };
 

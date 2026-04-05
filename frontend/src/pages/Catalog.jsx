@@ -4,10 +4,15 @@ import SearchBar from '../components/SearchBar';
 import AddProject from '../components/AddProjectButton';
 import ProjectTable from '../components/ProjectTable';
 import { useState, useEffect, useRef } from 'react';
+import { api } from '../services/api';
+import noDataIcon from '../assets/no data.png';
 
 function Catalog() {
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(14);
+  const [projects, setProjects] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const tableSlotRef = useRef(null);
 
   useEffect(() => {
@@ -31,166 +36,40 @@ function Catalog() {
     return () => window.removeEventListener('resize', calculateRowsPerPage);
   }, []);
 
-  const sampleProjects = [
-    {
-      number: "1",
-      bookNumber: "B001",
-      title: "AI-Powered Learning Platform",
-      names: "John Smith, Jane Doe",
-      adviser: "Dr. Robert Johnson",
-      coordinator: "Dr. Maria Garcia",
-      date: "2024-04-03"
-    },
-    {
-      number: "2",
-      bookNumber: "B002",
-      title: "Mobile Health Tracking App",
-      names: "Michael Chen, Sarah Williams",
-      adviser: "Dr. James Lee",
-      coordinator: "Dr. Patricia Brown",
-      date: "2024-03-28"
-    },
-    {
-      number: "3",
-      bookNumber: "B003",
-      title: "Sustainable Energy Management System",
-      names: "David Martinez, Emily Davis",
-      adviser: "Dr. Thomas Wilson",
-      coordinator: "Dr. Angela Rodriguez",
-      date: "2024-03-15"
-    },
-    {
-      number: "4",
-      bookNumber: "B004",
-      title: "IoT Smart Home Hub",
-      names: "Lisa Anderson, Christopher Lee",
-      adviser: "Dr. Elizabeth Martinez",
-      coordinator: "Dr. Daniel Garcia",
-      date: "2024-03-10"
-    },
-    {
-      number: "5",
-      bookNumber: "B005",
-      title: "Cloud-Based Data Analytics Platform",
-      names: "James Wilson, Amanda Chen",
-      adviser: "Dr. Richard Taylor",
-      coordinator: "Dr. Susan White",
-      date: "2024-02-28"
-    },
-    {
-      number: "6",
-      bookNumber: "B006",
-      title: "Cybersecurity Threat Detection System",
-      names: "Robert Brown, Jessica Davis",
-      adviser: "Dr. Kevin Johnson",
-      coordinator: "Dr. Michelle Rodriguez",
-      date: "2024-02-20"
-    },
-    {
-      number: "7",
-      bookNumber: "B007",
-      title: "Virtual Reality Training Simulator",
-      names: "Thomas Harris, Emily Wilson",
-      adviser: "Dr. Paul Anderson",
-      coordinator: "Dr. Lisa Thompson",
-      date: "2024-02-15"
-    },
-    {
-      number: "8",
-      bookNumber: "B008",
-      title: "Blockchain Supply Chain Tracker",
-      names: "Jennifer Taylor, Daniel Moore",
-      adviser: "Dr. Steven White",
-      coordinator: "Dr. Rachel Green",
-      date: "2024-02-10"
-    },
-    {
-      number: "9",
-      bookNumber: "B009",
-      title: "Machine Learning Recommendation Engine",
-      names: "Christopher Allen, Victoria Martinez",
-      adviser: "Dr. Mark Lewis",
-      coordinator: "Dr. Jennifer Clark",
-      date: "2024-01-30"
-    },
-    {
-      number: "10",
-      bookNumber: "B010",
-      title: "Smart Traffic Management System",
-      names: "Matthew Walker, Nicole Rodriguez",
-      adviser: "Dr. George Hall",
-      coordinator: "Dr. Patricia Lewis",
-      date: "2024-01-25"
-    },
-    {
-      number: "11",
-      bookNumber: "B011",
-      title: "Real-Time Language Translation Tool",
-      names: "Anthony Young, Karen King",
-      adviser: "Dr. Edward Wright",
-      coordinator: "Dr. Betty Scott",
-      date: "2024-01-20"
-    },
-    {
-      number: "12",
-      bookNumber: "B012",
-      title: "Automated Document Processing System",
-      names: "Steven Garcia, Nancy Hill",
-      adviser: "Dr. Charles Green",
-      coordinator: "Dr. Sandra Adams",
-      date: "2024-01-15"
-    },
-    {
-      number: "13",
-      bookNumber: "B013",
-      title: "Predictive Maintenance IoT Platform",
-      names: "Brian Nelson, Donna Baker",
-      adviser: "Dr. Daniel Carter",
-      coordinator: "Dr. Deborah Miller",
-      date: "2024-01-10"
-    },
-    {
-      number: "14",
-      bookNumber: "B014",
-      title: "Augmented Reality Shopping Application",
-      names: "Ronald Jones, Carol Davis",
-      adviser: "Dr. Kenneth Phillips",
-      coordinator: "Dr. Barbara Campbell",
-      date: "2024-01-05"
-    },
-    {
-      number: "15",
-      bookNumber: "B015",
-      title: "Advanced Computer Vision System",
-      names: "George Taylor, Dorothy Evans",
-      adviser: "Dr. Ronald Jackson",
-      coordinator: "Dr. Susan Rogers",
-      date: "2023-12-30"
-    },
-    {
-      number: "16",
-      bookNumber: "B016",
-      title: "Quantum Computing Simulator",
-      names: "Paul Anderson, Judith Roberts",
-      adviser: "Dr. Joseph Harris",
-      coordinator: "Dr. Brenda Murphy",
-      date: "2023-12-25"
-    },
-    {
-      number: "17",
-      bookNumber: "B017",
-      title: "Neural Network Optimization Framework",
-      names: "Mark Thompson, Mary Peterson",
-      adviser: "Dr. Thomas Anderson",
-      coordinator: "Dr. Helen Mitchell",
-      date: "2023-12-20"
-    },
-  ];
+  useEffect(() => {
+    const fetchProjects = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        const data = await api.getProjects();
+        setProjects(data);
+      } catch (err) {
+        setError('Failed to load projects. Please try again later.');
+        console.error('Error fetching projects:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  const totalPages = Math.ceil(sampleProjects.length / itemsPerPage);
+    fetchProjects();
+  }, []);
+
+  const handleAddProject = async (projectData) => {
+    try {
+      await api.addProject(projectData);
+      // Refresh the projects list after adding
+      const data = await api.getProjects();
+      setProjects(data);
+    } catch (err) {
+      console.error('Error adding project:', err);
+      // You might want to show an error message to the user here
+    }
+  };
+
+  const totalPages = Math.ceil(projects.length / itemsPerPage);
   const startIdx = (currentPage - 1) * itemsPerPage;
   const endIdx = startIdx + itemsPerPage;
-  const currentProjects = sampleProjects.slice(startIdx, endIdx);
+  const currentProjects = projects.slice(startIdx, endIdx);
 
   return (
     <>
@@ -200,23 +79,36 @@ function Catalog() {
             <SearchBar />
           </div>
           <div className="catalog-actions">
-            <AddProject />
+            <AddProject onAdd={handleAddProject} />
           </div>
         </div>
 
         <div className="catalog-table-slot" ref={tableSlotRef}>
-          <ProjectTable projects={currentProjects} />
+          {loading ? (
+            <div className="loading-state">Loading projects...</div>
+          ) : error ? (
+            <div className="error-state">{error}</div>
+          ) : projects.length === 0 ? (
+            <div className="no-data-state">
+              <img src={noDataIcon} alt="No data" className="no-data-icon" />
+              <p className="no-data-text">No data available</p>
+            </div>
+          ) : (
+            <ProjectTable projects={currentProjects} />
+          )}
         </div>
 
-        <div className="catalog-pagination-host">
-          <Pagination
-            currentPage={currentPage}
-            totalPages={totalPages}
-            totalItems={sampleProjects.length}
-            itemsPerPage={itemsPerPage}
-            onPageChange={setCurrentPage}
-          />
-        </div>
+        {projects.length > 0 && (
+          <div className="catalog-pagination-host">
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              totalItems={projects.length}
+              itemsPerPage={itemsPerPage}
+              onPageChange={setCurrentPage}
+            />
+          </div>
+        )}
 
       </div>
 
@@ -239,6 +131,43 @@ function Catalog() {
           display: flex;
           flex-direction: column;
           margin-top: auto;
+        }
+
+        .loading-state, .error-state {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          height: 200px;
+          font-family: 'Inter', sans-serif;
+          font-size: 1rem;
+          color: #64748b;
+        }
+
+        .error-state {
+          color: #dc2626;
+        }
+
+        .no-data-state {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          height: 300px;
+          gap: .2rem;
+        }
+
+        .no-data-icon {
+          width: 35px;
+          height: 35px;
+          opacity: 0.7;
+        }
+
+        .no-data-text {
+          font-family: DM Serif Display, serif;
+          font-size: 0.85rem;
+          color: #202d3f9f;
+          margin: 0;
+          font-weight: 700;
         }
 
         .catalog-header {

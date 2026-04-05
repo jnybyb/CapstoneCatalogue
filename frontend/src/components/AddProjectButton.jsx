@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import AddProjectModal from "./NewProjectModal";
 
-function AddProject() {
+function AddProject({ onAdd }) {
   const [modalOpen, setModalOpen] = useState(false);
 
   const handleAddProject = () => {
@@ -16,6 +16,9 @@ function AddProject() {
     // You can handle the new project data here (e.g., send to API or update state)
     // For now, just log it
     console.log("New Project Data:", projectData);
+    if (onAdd) {
+      onAdd(projectData);
+    }
   };
 
   return (
