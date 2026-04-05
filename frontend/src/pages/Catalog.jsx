@@ -3,128 +3,11 @@ import Pagination from '../components/Pagination';
 import SearchBar from '../components/SearchBar';
 import AddProject from '../components/AddProjectButton';
 import ProjectTable from '../components/ProjectTable';
-import { useState, useLayoutEffect, useRef, useCallback } from 'react';
-
-function getViewportHeight() {
-  if (typeof window === 'undefined') return 800;
-  return window.visualViewport?.height ?? window.innerHeight;
-}
-
-/** Fallback row height when no data rows are rendered yet (multi-line author cells). */
-const FALLBACK_ROW_HEIGHT_PX = 78;
-
-function parsePx(value) {
-  const n = parseFloat(value);
-  return Number.isFinite(n) ? n : 0;
-}
+import { useState } from 'react';
 
 function Catalog() {
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(8);
-  const lastItemsPerPageRef = useRef(null);
-  const catalogMainRef = useRef(null);
-  const catalogHeaderRef = useRef(null);
-  const paginationHostRef = useRef(null);
-
-  const recalcItemsPerPage = useCallback(() => {
-    const vh = getViewportHeight();
-
-    const appHeader = document.querySelector('.app-header');
-    const headerH = appHeader?.offsetHeight ?? 0;
-
-    const mainEl = catalogMainRef.current?.closest('main');
-    let mainPadY = 0;
-    if (mainEl) {
-      const st = getComputedStyle(mainEl);
-      mainPadY = parsePx(st.paddingTop) + parsePx(st.paddingBottom);
-    }
-
-    const catMain = catalogMainRef.current;
-    let catPadY = 0;
-    if (catMain) {
-      const st = getComputedStyle(catMain);
-      catPadY = parsePx(st.paddingTop) + parsePx(st.paddingBottom);
-    }
-
-    const toolbar = catalogHeaderRef.current;
-    const toolbarH = toolbar?.offsetHeight ?? 0;
-    const toolbarMb = toolbar ? parsePx(getComputedStyle(toolbar).marginBottom) : 0;
-
-    const pagEl = document.querySelector('.catalog-pagination-host .pagination');
-    let paginationBlockH = 0;
-    if (pagEl) {
-      const st = getComputedStyle(pagEl);
-      const rect = pagEl.getBoundingClientRect();
-      paginationBlockH =
-        rect.height + parsePx(st.marginTop) + parsePx(st.marginBottom);
-    } else {
-      paginationBlockH = 72;
-    }
-
-    const theadEl = document.querySelector('.project-table thead');
-    const theadH = theadEl?.offsetHeight ?? 46;
-
-    const rowEl = document.querySelector('.project-table tbody tr.clickable-row');
-    const rowH = Math.max(
-      36,
-      Math.ceil(rowEl?.getBoundingClientRect().height ?? FALLBACK_ROW_HEIGHT_PX)
-    );
-
-    const fudge = 6;
-    const used =
-      headerH +
-      mainPadY +
-      catPadY +
-      toolbarH +
-      toolbarMb +
-      theadH +
-      paginationBlockH +
-      fudge;
-
-    let available = vh - used;
-    if (available < rowH) available = rowH;
-
-    let rows = Math.max(1, Math.floor(available / rowH));
-
-    if (lastItemsPerPageRef.current !== null && lastItemsPerPageRef.current !== rows) {
-      setCurrentPage(1);
-    }
-    lastItemsPerPageRef.current = rows;
-
-    setItemsPerPage((prev) => (prev === rows ? prev : rows));
-  }, []);
-
-  useLayoutEffect(() => {
-    const run = () => {
-      recalcItemsPerPage();
-      requestAnimationFrame(() => recalcItemsPerPage());
-    };
-
-    run();
-    const timer = setTimeout(run, 50);
-
-    window.addEventListener('resize', run);
-    window.addEventListener('orientationchange', run);
-    window.visualViewport?.addEventListener('resize', run);
-
-    const roTargets = [catalogHeaderRef.current, paginationHostRef.current, catalogMainRef.current].filter(
-      Boolean
-    );
-    const ro = typeof ResizeObserver !== 'undefined' ? new ResizeObserver(run) : null;
-    roTargets.forEach((el) => ro?.observe(el));
-    const appHeader = document.querySelector('.app-header');
-    if (appHeader) ro?.observe(appHeader);
-    const pagInner = document.querySelector('.catalog-pagination-host .pagination');
-    if (pagInner) ro?.observe(pagInner);
-
-    return () => {
-      clearTimeout(timer);
-      window.removeEventListener('resize', run);
-      window.removeEventListener('orientationchange', run);
-      window.visualViewport?.removeEventListener('resize', run);
-      ro?.disconnect();
-    };
-  }, [recalcItemsPerPage, itemsPerPage]);
+  const itemsPerPage = 7;
   const sampleProjects = [
     {
       number: "1",
@@ -288,8 +171,8 @@ function Catalog() {
 
   return (
     <>
-      <div className="catalog-main" ref={catalogMainRef}>
-        <div className="catalog-header" ref={catalogHeaderRef}>
+      <div className="catalog-main">
+        <div className="catalog-header">
           <div className="catalog-search">
             <SearchBar />
           </div>
@@ -302,7 +185,7 @@ function Catalog() {
           <ProjectTable projects={currentProjects} />
         </div>
 
-        <div className="catalog-pagination-host" ref={paginationHostRef}>
+        <div className="catalog-pagination-host">
           <Pagination
             currentPage={currentPage}
             totalPages={totalPages}

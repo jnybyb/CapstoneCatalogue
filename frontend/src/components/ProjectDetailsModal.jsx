@@ -281,6 +281,14 @@ function ProjectDetailsModal({ project, isOpen, onClose }) {
           color: #4b5563;
         }
 
+        /* TABLET RESPONSIVE */
+
+        @media (max-width: 1024px) and (min-width: 601px) {
+          .modal-content {
+            width: calc(100vw - 38vw);
+          }
+        }
+
         /* MOBILE RESPONSIVE */
 
         @media (max-width: 600px) {
