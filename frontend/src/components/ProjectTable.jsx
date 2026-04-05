@@ -207,13 +207,22 @@ function ProjectTable({ projects = [] }) {
           }
         }
 
-        /* Phone portrait: No., Book #, Title only */
+        /* Phone portrait: No., Title only */
         @media (max-width: 767px) and (orientation: portrait) {
+          .project-table th:nth-child(2),
+          .project-table td:nth-child(2),
           .project-table__col-author,
           .project-table__col-adviser,
           .project-table__col-coordinator,
           .project-table__col-date {
             display: none !important;
+          }
+
+          /* Fix header styling for visible columns on mobile */
+          .project-table th:nth-child(3) {
+            border-right: 1px solid #babfcab9;
+            border-top-right-radius: 0.5rem;
+            padding: 0.4rem 0.4rem;
           }
         }
 

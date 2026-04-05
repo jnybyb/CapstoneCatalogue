@@ -200,7 +200,6 @@ function Catalog() {
       <style>{`
         .catalog-main {
           flex: 1;
-          min-height: 0;
           display: flex;
           flex-direction: column;
           overflow: hidden;
@@ -216,6 +215,7 @@ function Catalog() {
           flex-shrink: 0;
           display: flex;
           flex-direction: column;
+          margin-top: auto;
         }
 
         .catalog-header {

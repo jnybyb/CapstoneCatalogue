@@ -281,12 +281,75 @@ function ProjectDetailsModal({ project, isOpen, onClose }) {
           color: #4b5563;
         }
 
+        /* MOBILE LANDSCAPE */
+
+        @media (max-height: 600px) and (orientation: landscape) {
+          .modal-content {
+            width: 75vw;
+            max-width: 80%;
+            max-height: 95vh;
+            max-height: 95dvh;
+            min-height: 85vh;
+            padding: 0.05rem 0.5rem;
+          }
+
+          .document-preview {
+            padding: 0.8rem 0.75rem;
+          }
+
+          .doc-title {
+            font-size: 1.1rem;
+            margin-bottom: 0.2rem;
+          }
+
+          .doc-date {
+            font-size: 0.65rem;
+            margin-bottom: 0.6rem;
+          }
+
+          .doc-authors {
+            font-size: 0.8rem;
+            margin-bottom: 0.4rem;
+          }
+
+          .doc-staff {
+            gap: 0.8rem;
+            margin-bottom: 0.4rem;
+            font-size: 0.7rem;
+          }
+
+          .staff-value {
+            font-size: 0.75rem;
+          }
+
+          .staff-item strong {
+            font-size: 0.55rem;
+          }
+
+          .panel-member {
+            font-size: 0.7rem;
+          }
+
+          .doc-abstract {
+            min-height: 80px;
+          }
+        }
+
         /* TABLET RESPONSIVE */
 
         @media (max-width: 1024px) and (min-width: 601px) {
           .modal-content {
             width: calc(100vw - 38vw);
             height: calc(100vh - 35vw);
+          }
+        }
+
+        /* DESKTOP STYLES */
+
+        @media (min-width: 1025px) {
+          .modal-content {
+            width: calc(100vw - 64vw);
+            height: calc(100vh - 10vh);
           }
         }
 

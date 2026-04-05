@@ -101,19 +101,17 @@ function Pagination({ currentPage, totalPages, totalItems, itemsPerPage, onPageC
           align-items: center;
           justify-content: space-between;
           gap: 0.5rem;
-          padding: 1rem 0.2rem;
+          padding: 0.75rem 0.2rem;
           background: none;
           border-radius: 0.375rem;
-          margin-top: 1.3rem;
+          margin-top: 1rem;
+          margin-bottom: 0;
           flex-wrap: wrap;
-          position: sticky;
-          bottom: 0;
-          z-index: 50;
           border-top: 1px solid #e5e7eb;
         }
 
         .pagination-info {
-          font-size: 0.85rem;
+          font-size: 0.8rem;
           color: #1f2937;
           font-weight: 500;
           flex-shrink: 1;
@@ -212,7 +210,7 @@ function Pagination({ currentPage, totalPages, totalItems, itemsPerPage, onPageC
           border: none;
           background: transparent;
           cursor: pointer;
-          font-size: 0.75rem;
+          font-size: 0.72rem;
           font-weight: 450;
           color: #1f2937;
           transition: all 0.2s;
