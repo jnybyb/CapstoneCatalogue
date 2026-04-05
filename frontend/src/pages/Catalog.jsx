@@ -207,7 +207,7 @@ function Catalog() {
         }
 
         .catalog-table-slot {
-          min-height: 0;
+          min-height: calc(100vh - 200px);
           overflow: hidden;
         }
 
@@ -255,6 +255,10 @@ function Catalog() {
             padding: 0.8rem 0.75rem;
           }
 
+          .catalog-table-slot {
+            min-height: calc(100vh - 400px);
+          }
+
           .catalog-header {
             gap: 0.5rem;
             margin-bottom: 1rem;
@@ -277,6 +281,10 @@ function Catalog() {
         @media (max-width: 600px) {
           .catalog-main {
             padding: 0.75rem 0.75rem;
+          }
+
+          .catalog-table-slot {
+            min-height: calc(100vh - 400px);
           }
 
           .catalog-header {
