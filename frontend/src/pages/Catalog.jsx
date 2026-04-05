@@ -208,7 +208,6 @@ function Catalog() {
         }
 
         .catalog-table-slot {
-          flex: 1;
           min-height: 0;
           overflow: hidden;
         }
