@@ -1,9 +1,13 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import ProjectDetailsModal from "./ProjectDetailsModal";
+import deleteIcon from "../assets/delete.png";
+import editIcon from "../assets/edit.png";
 
-function ProjectTable({ projects = [] }) {
+function ProjectTable({ projects = [], onEdit, onDelete }) {
   const [selectedProject, setSelectedProject] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
+  const [activeMenu, setActiveMenu] = useState(null);
+  const menuRef = useRef(null);
 
   const formatDate = (dateString) => {
     if (!dateString) return "-";
@@ -61,6 +65,34 @@ function ProjectTable({ projects = [] }) {
     setSelectedProject(null);
   };
 
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (menuRef.current && !menuRef.current.contains(event.target)) {
+        setActiveMenu(null);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const handleMenuToggle = (projectId, event) => {
+    event.stopPropagation();
+    setActiveMenu((current) => (current === projectId ? null : projectId));
+  };
+
+  const handleEdit = (project, event) => {
+    event.stopPropagation();
+    setActiveMenu(null);
+    onEdit?.(project);
+  };
+
+  const handleDelete = (project, event) => {
+    event.stopPropagation();
+    setActiveMenu(null);
+    onDelete?.(project);
+  };
+
   return (
     <>
       <table className="project-table">
@@ -76,6 +108,7 @@ function ProjectTable({ projects = [] }) {
               <span className="project-table__head-full">Date</span>
               <span className="project-table__head-year">Year</span>
             </th>
+            <th className="project-table__col-actions" aria-label="Actions"></th>
           </tr>
         </thead>
         <tbody>
@@ -101,11 +134,50 @@ function ProjectTable({ projects = [] }) {
                     {project.date ? formatYear(project.date) : "-"}
                   </span>
                 </td>
+                <td
+                  className="project-table__col-actions"
+                  onClick={(e) => e.stopPropagation()}
+                  ref={activeMenu === project.id ? menuRef : null}
+                >
+                  <div className="action-menu">
+                    <button
+                      type="button"
+                      className="action-menu-button"
+                      onClick={(e) => handleMenuToggle(project.id, e)}
+                      aria-label="Open actions"
+                    >
+                      <span className="dot" />
+                      <span className="dot" />
+                      <span className="dot" />
+                    </button>
+
+                    {activeMenu === project.id && (
+                      <div className="action-menu-popup">
+                        <button
+                          type="button"
+                          className="action-menu-item edit"
+                          onClick={(e) => handleEdit(project, e)}
+                        >
+                          <img src={editIcon} alt="Edit" className="item-icon" />
+                          Edit
+                        </button>
+                        <button
+                          type="button"
+                          className="action-menu-item delete"
+                          onClick={(e) => handleDelete(project, e)}
+                        >
+                          <img src={deleteIcon} alt="Delete" className="item-icon" />
+                          Delete
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                </td>
               </tr>
             ))
           ) : (
             <tr>
-              <td colSpan="7" className="no-data">
+              <td colSpan="8" className="no-data">
                 No projects found
               </td>
             </tr>
@@ -203,6 +275,96 @@ function ProjectTable({ projects = [] }) {
         .project-table td:nth-child(3) {
           width: 30%;
           min-width: 220px;
+        }
+
+        .project-table__col-actions {
+          width: 4.5rem;
+          min-width: 4.5rem;
+          text-align: center;
+        }
+
+        .action-menu {
+          position: relative;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+        }
+
+        .action-menu-button {
+          border: none;
+          background: transparent;
+          cursor: pointer;
+          display: inline-flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          gap: 2px;
+          width: 13px;
+          height: 13px;
+          padding: 0;
+          border-radius: 999px;
+          transition: background-color 0.15s ease;
+        }
+
+        .action-menu-button:hover {
+          background: rgba(0, 0, 0, 0.05);
+        }
+
+        .action-menu-button .dot {
+          width: 2.5px;
+          height: 2.5px;
+          background: #334155;
+          border-radius: 50%;
+          display: inline-block;
+        }
+
+        .action-menu-popup {
+          position: absolute;
+          right: 15px;
+          background: #ffffff;
+          border: 1px solid #e2e8f0;
+          border-radius: 0.25rem;
+          box-shadow: 0 10px 25px rgba(15, 23, 42, 0.08);
+          min-width: 4.5rem;
+          z-index: 10;
+        }
+
+        .action-menu-item {
+          width: 100%;
+          border: none;
+          background: transparent;
+          text-align: left;
+          padding: 0.30rem 0.25rem;
+          display: flex;
+          align-items: center;
+          gap: 0.35rem;
+          font-family: 'Inter', sans-serif;
+          font-size: 0.58rem;
+          cursor: pointer;
+          transition: background-color 0.15s ease;
+        }
+
+        .item-icon {
+          width: .95rem;
+          height: .80rem;
+          object-fit: contain;
+        }
+
+        .action-menu-item:hover {
+          background: #f8fafc;
+        }
+
+        .action-menu-item.delete {
+          color: #b91c1c;
+        }
+
+        .action-menu-item.edit {
+          color: #1FB141;
+        }
+
+        .item-icon {
+          font-size: 0.95rem;
+          line-height: 1;
         }
 
         .project-table td.project-table__num {
