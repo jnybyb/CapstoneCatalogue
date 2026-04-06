@@ -6,8 +6,12 @@ function ProjectTable({ projects = [] }) {
   const [modalOpen, setModalOpen] = useState(false);
 
   const formatDate = (dateString) => {
+    if (!dateString) return "-";
     const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+    if (Number.isNaN(date.getTime())) return "-";
+    return date
+      .toLocaleDateString('en-US', { month: 'long', year: 'numeric' })
+      .toUpperCase();
   };
 
   const formatYear = (dateString) => {
@@ -17,12 +21,35 @@ function ProjectTable({ projects = [] }) {
     return String(date.getFullYear());
   };
 
-  const renderAuthors = (names) => {
-    if (!names) return "-";
-    return names.split(',').map((name, idx) => (
-      <div key={idx}>{idx + 1}. {name.trim()}</div>
+  const renderNumberedList = (value) => {
+    if (!value) return "-";
+    const items = value
+      .split(',')
+      .map(item => item.trim())
+      .filter(item => item);
+
+    if (items.length === 0) return "-";
+
+    return items.map((item, idx) => (
+      <div key={idx}>{idx + 1}. {item}</div>
     ));
   };
+
+  const renderMultiLine = (value) => {
+    if (!value) return "-";
+    const items = value
+      .split(',')
+      .map(item => item.trim())
+      .filter(item => item);
+
+    if (items.length === 0) return "-";
+
+    return items.map((item, idx) => (
+      <div key={idx}>{item}</div>
+    ));
+  };
+
+  const renderAuthors = (names) => renderNumberedList(names);
 
   const handleRowClick = (project) => {
     setSelectedProject(project);
@@ -55,17 +82,17 @@ function ProjectTable({ projects = [] }) {
           {projects.length > 0 ? (
             projects.map((project, index) => (
               <tr
-                key={index}
+                key={project.id || index}
                 className="clickable-row"
                 onClick={() => handleRowClick(project)}
                 style={{ cursor: "pointer" }}
               >
-                <td className="project-table__num">{project.number || "-"}</td>
+                <td className="project-table__num">{index + 1}</td>
                 <td>{project.bookNumber || "-"}</td>
                 <td>{project.title || "-"}</td>
                 <td className="authors-cell project-table__col-author">{renderAuthors(project.names)}</td>
                 <td className="project-table__col-adviser">{project.adviser || "-"}</td>
-                <td className="project-table__col-coordinator">{project.coordinator || "-"}</td>
+                <td className="project-table__col-coordinator">{renderMultiLine(project.coordinator)}</td>
                 <td className="project-table__col-date">
                   <span className="project-table__date-full">
                     {project.date ? formatDate(project.date) : "-"}
@@ -170,6 +197,12 @@ function ProjectTable({ projects = [] }) {
           padding-left: 0.65rem;
           padding-right: 0.65rem;
           box-sizing: border-box;
+        }
+
+        .project-table th:nth-child(3),
+        .project-table td:nth-child(3) {
+          width: 30%;
+          min-width: 220px;
         }
 
         .project-table td.project-table__num {

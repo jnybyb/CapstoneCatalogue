@@ -26,7 +26,32 @@ const generateBookNumber = (month, year, callback) => {
 
 // GET all projects
 exports.getProjects = (req, res) => {
-  db.query("SELECT * FROM projects", (err, results) => {
+  const sql = `
+    SELECT
+      p.id,
+      p.book_number AS bookNumber,
+      p.title,
+      p.month_year AS monthYear,
+      p.abstract_link AS abstractLink,
+      p.binding_type AS bindingType,
+      GROUP_CONCAT(DISTINCT a.name ORDER BY pa.author_order SEPARATOR ', ') AS names,
+      MAX(CASE WHEN pf.role = 'Adviser' THEN f.name END) AS adviser,
+      GROUP_CONCAT(DISTINCT CASE WHEN pf.role = 'Thesis Coordinator' THEN f.name END SEPARATOR ', ') AS coordinator,
+      MAX(CASE WHEN pf.role = 'Program Head' THEN f.name END) AS programHead,
+      MAX(CASE WHEN pf.role = 'Dean' THEN f.name END) AS dean,
+      MAX(CASE WHEN pf.role = 'Chair Panel' THEN f.name END) AS chairPanel,
+      GROUP_CONCAT(DISTINCT CASE WHEN pf.role = 'Panel Member' THEN f.name END SEPARATOR ', ') AS panelMembers,
+      STR_TO_DATE(CONCAT('01 ', p.month_year), '%d %M %Y') AS date
+    FROM projects p
+    LEFT JOIN project_authors pa ON pa.project_id = p.id
+    LEFT JOIN authors a ON a.id = pa.author_id
+    LEFT JOIN project_faculty pf ON pf.project_id = p.id
+    LEFT JOIN faculty f ON f.id = pf.faculty_id
+    GROUP BY p.id
+    ORDER BY p.created_at DESC
+  `;
+
+  db.query(sql, (err, results) => {
     if (err) {
       res.status(500).send(err);
     } else {
