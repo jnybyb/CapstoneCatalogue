@@ -34,4 +34,47 @@ export const api = {
       throw error;
     }
   },
+
+  // Upload file to Google Drive
+  uploadFile: async (file, title = null) => {
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+      if (title) {
+        formData.append('title', title);
+      }
+
+      const response = await fetch(`${API_BASE_URL}/projects/upload`, {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to upload file');
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error('Error uploading file:', error);
+      throw error;
+    }
+  },
+
+  // Delete file from Google Drive
+  deleteFile: async (fileId) => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/projects/file/${fileId}`, {
+        method: 'DELETE',
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to delete file');
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error('Error deleting file:', error);
+      throw error;
+    }
+  },
 };

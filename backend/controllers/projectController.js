@@ -1,4 +1,10 @@
 const db = require("../config/db");
+const { 
+  uploadFileToDrive, 
+  deleteFileFromDrive,
+  getAuthorizationUrl,
+  getTokensFromCode
+} = require("../utils/googleDrive");
 
 // Generate book number: Format MONYEAR-INCREMENT (e.g., JUL24-001)
 const generateBookNumber = (month, year, callback) => {
@@ -287,4 +293,106 @@ exports.addProject = (req, res) => {
       }
     );
   });
+};
+
+// UPLOAD file to Google Drive
+exports.uploadFile = async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ error: "No file provided" });
+    }
+
+    const folderId = process.env.GOOGLE_DRIVE_FOLDER_ID;
+    
+    // Get title from form data to rename the file
+    const title = req.body.title || req.query.title;
+    
+    // Extract file extension
+    const originalName = req.file.originalname;
+    const fileExtension = originalName.substring(originalName.lastIndexOf('.'));
+    
+    // Create new filename based on title (or use original if no title)
+    const newFileName = title 
+      ? `${title}${fileExtension}` 
+      : originalName;
+
+    // Upload file to Google Drive
+    const driveResult = await uploadFileToDrive(
+      req.file.buffer,
+      newFileName,
+      req.file.mimetype,
+      folderId
+    );
+
+    res.json({
+      message: "File uploaded successfully to Google Drive",
+      fileId: driveResult.fileId,
+      fileName: driveResult.name,
+      driveLink: driveResult.webViewLink,
+      downloadLink: `https://drive.google.com/uc?id=${driveResult.fileId}&export=download`,
+    });
+  } catch (error) {
+    console.error("Error during file upload:", error);
+    res.status(500).json({ error: error.message });
+  }
+};
+
+// DELETE file from Google Drive
+exports.deleteFile = async (req, res) => {
+  try {
+    const { fileId } = req.params;
+
+    if (!fileId) {
+      return res.status(400).json({ error: "File ID is required" });
+    }
+
+    await deleteFileFromDrive(fileId);
+
+    res.json({ message: "File deleted successfully from Google Drive" });
+  } catch (error) {
+    console.error("Error deleting file:", error);
+    res.status(500).json({ error: error.message });
+  }
+};
+
+// GET Google Drive OAuth2 authorization URL
+exports.getAuthUrl = (req, res) => {
+  try {
+    const authUrl = getAuthorizationUrl();
+    res.json({ authUrl });
+  } catch (error) {
+    console.error("Error getting auth URL:", error);
+    res.status(500).json({ error: error.message });
+  }
+};
+
+// HANDLE OAuth2 callback and save refresh token
+exports.handleAuthCallback = async (req, res) => {
+  try {
+    const { code } = req.query;
+
+    if (!code) {
+      return res.status(400).json({ error: "Authorization code is required" });
+    }
+
+    const tokens = await getTokensFromCode(code);
+
+    if (tokens.refresh_token) {
+      // Return the refresh token so user can add it to .env
+      res.json({
+        message: "Authorization successful!",
+        refreshToken: tokens.refresh_token,
+        accessToken: tokens.access_token,
+        instructions: "Add this refresh token to your .env file as GOOGLE_REFRESH_TOKEN",
+      });
+    } else {
+      res.json({
+        message: "Authorization successful! You may need to re-authorize to get a refresh token.",
+        accessToken: tokens.access_token,
+      });
+    }
+  } catch (error) {
+    console.error("Error handling auth callback:", error);
+    res.status(500).json({ error: error.message });
+  }
 };

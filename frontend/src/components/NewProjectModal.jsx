@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useBodyScrollLock } from "../hooks/useBodyScrollLock";
+import { api } from "../services/api";
 
 function AddProjectModal({ isOpen, onClose, onAdd }) {
 
@@ -15,10 +16,12 @@ function AddProjectModal({ isOpen, onClose, onAdd }) {
     programHead: "",
     dean: "",
     abstractImage: null,
+    abstractLink: null,
     bookType: "",
   };
 
   const [form, setForm] = useState(initialForm);
+  const [isUploading, setIsUploading] = useState(false);
 
   useEffect(() => {
     if (!isOpen) {
@@ -59,11 +62,40 @@ function AddProjectModal({ isOpen, onClose, onAdd }) {
     });
   };
 
-  const handleImageChange = (field) => (e) => {
+  const handleImageChange = (field) => async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    // Store the file for preview
     setForm(prev => ({
       ...prev,
-      [field]: e.target.files[0]
+      [field]: file
     }));
+
+    // Upload to Google Drive with title
+    try {
+      setIsUploading(true);
+      // Pass the project title to rename the upload
+      const result = await api.uploadFile(file, form.title.trim() || "Abstract");
+      
+      // Store the Google Drive link
+      setForm(prev => ({
+        ...prev,
+        abstractLink: result.driveLink
+      }));
+      
+      console.log("File uploaded successfully:", result);
+    } catch (error) {
+      alert("Failed to upload file to Google Drive: " + error.message);
+      // Reset the file if upload fails
+      setForm(prev => ({
+        ...prev,
+        [field]: null,
+        abstractLink: null
+      }));
+    } finally {
+      setIsUploading(false);
+    }
   };
 
   const handleSubmit = (e) => {
@@ -117,7 +149,7 @@ function AddProjectModal({ isOpen, onClose, onAdd }) {
       panelMembers: form.panels.filter(panel => panel.trim()),
       programHead: form.programHead.trim(),
       dean: form.dean.trim(),
-      abstractLink: form.abstractImage ? form.abstractImage.name : null,
+      abstractLink: form.abstractLink || null, // Use Google Drive link
       bindingType: form.bookType || "Hardbound"
     };
 
@@ -432,11 +464,24 @@ function AddProjectModal({ isOpen, onClose, onAdd }) {
 
                 <div className="image-placeholder">
                   {form.abstractImage ? (
-                    <img
-                      src={URL.createObjectURL(form.abstractImage)}
-                      alt="Abstract preview"
-                      className="preview-image"
-                    />
+                    <>
+                      <img
+                        src={URL.createObjectURL(form.abstractImage)}
+                        alt="Abstract preview"
+                        className="preview-image"
+                      />
+                      {isUploading && (
+                        <div className="upload-overlay">
+                          <div className="spinner"></div>
+                          <p>Uploading to Google Drive...</p>
+                        </div>
+                      )}
+                      {form.abstractLink && !isUploading && (
+                        <div className="upload-success">
+                          ✓ Uploaded
+                        </div>
+                      )}
+                    </>
                   ) : (
                     <div className="placeholder-content">
                       <svg
@@ -455,9 +500,10 @@ function AddProjectModal({ isOpen, onClose, onAdd }) {
 
                 <input
                   type="file"
-                  accept="image/*"
+                  accept="image/*,.pdf"
                   onChange={handleImageChange("abstractImage")}
                   className="choose-photo-btn"
+                  disabled={isUploading}
                 />
               </div>
 

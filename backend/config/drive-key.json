@@ -1,0 +1,13 @@
+{
+  "type": "service_account",
+  "project_id": "capstone-catalogue-storage",
+  "private_key_id": "fac999c9b4098ca42e6548dbca6be0b86f516ef3",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQC/ZH11OImiYM+h\nAyMg78QjnFd4yACi+k3VzoNkeWkHnSMLayaP/GstlWLihHfjx+L/Fl0kk+LFGjw9\nxzhDQjxUTVfPGF0Qoaj7KOWchf9wg2Xv2T6zMTDJYEBgFlb7/WPnNuRB82wpdsoX\ncQIFuzUpxxdvuFIIJ+L/rmmJKhpwrD5/EyZT0KLVkpCm5cdaa4Da7osQ4pzxym20\nxEnkdJykit+RDqau/fXsfbwCotAukP1YJxmvGobJ20FKnIwWe3/COwuPZsdDIZa4\ngpKckteA/fsmgJZ7hZSms/vW9La6Qj/vCiszXfoVXj//gtPxp+8H3NgFzIN+UsoS\nwpDft0ztAgMBAAECggEAUSPBLFjzwKtaWuCBnA0KEi7Nxp7D5lRHe0U53va52Eh9\n+vFKP/C7X2/dpDqUuTScv5gzlLY9hWJB987lw13pRbQkbd/eVJa0lQYZkeodCQ4r\nwStQsZdBH552rEXMSrh6CiPzUSJp0IpT0uxN9zAOsc992BdEb8C5M7w1cbkvzGP8\nokDtulum0k+dxLNVL5FyRWv9BEt3ucsM38Csgi8vFS6aKODPETlVsXgfWWwFEwY0\nCC4uRwcKSLn2yI0Biq56YubPUiuC2svwpngT4XIqU0JGGSDZBeKRciv+M2TbViX+\na+Jf+LjHGnGco9ZNHoDb4S5UfjHnSa8FKrDdnzjm4QKBgQD3ZAVxGhJPXtKV1wHw\nskPodrVNU8KQ7hh3MqqrqC1dymnfQIFybKQJLTTJKqnmUZQeU/WjKeP9ws8ThUOA\nsB57imOw0qsLHVoCfkd0Z/x46vB4YjB1HJrmUlh65LzA+il/2Y3pMeFmDnuq9euH\nyHyGjGYTBqfcFhvrr60YexRwrwKBgQDGDZY4xTFg+MqX7Nk06Dj5Z/+5RtBT6Isz\n9S+xOghugM/Z15BM7w23k0yga4L9Lzg3tMkaCcVgRGj8b0qmyVuRu0H+lr7ulPKY\nQmf8lDWNMg7AW7ni8uV0IKK0n6IwnkA3s0taAdkpVjEqxN1jaM0b83IlqhhLKTTj\nmtPwGYmrIwKBgQDAZx/8WMSIyjyJoNC3fE1oTHqxC0W1JhgNDHDEVGYEHdq9cRO8\nBFaHdIsrMW013ZiPBcly/q98urgGfIyFV3Q9rOHfsdipKkjIy6GTHRS0jjQ7zFHX\no0mte7moyqEqjOUds/u0s8CTeQwhaGWoEvsWQbdZcMG4X9GTOewrr/2zrQKBgEMI\nuj3A0LPHwZqmeeYka5RPFQj65Oxhmywc4uWThOMSCkfrZFYF25i07IynlxBm+Rox\nwJdlkz7AKOC4MoY9RRcQUIgBMeLC21GZuGSPLYj61m9ZHJOqLuudWDTWiyj1hzrT\nHr/6PCx3lfCp7V0GTdYWEh6ZcduOuO4Iq49qtWQNAoGALB5mXjY6SZEM91kHQDzs\nWAtBvemeChN8Uk1nAEVTAHk2o1QIo8dJ1W7DgEUDznHVZk/cUfiaBuyieQoyUkF8\n1tLUpS+dNMW3gOghSU0MtJ1QvGxrIRhuymJAm3yp85aehCR78BDq4lfbYBceqzct\nKlXIEKe2cwoXEG3ZuRUGh3s=\n-----END PRIVATE KEY-----\n",
+  "client_email": "drive-uploader@capstone-catalogue-storage.iam.gserviceaccount.com",
+  "client_id": "117344946742192839121",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/drive-uploader%40capstone-catalogue-storage.iam.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
+}
