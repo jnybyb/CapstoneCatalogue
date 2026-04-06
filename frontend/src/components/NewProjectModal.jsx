@@ -22,6 +22,8 @@ function AddProjectModal({ isOpen, onClose, onAdd }) {
 
   const [form, setForm] = useState(initialForm);
   const [isUploading, setIsUploading] = useState(false);
+  const [modalMessage, setModalMessage] = useState("");
+  const [showSuccessMessage, setShowSuccessMessage] = useState(false);
 
   useEffect(() => {
     if (!isOpen) {
@@ -62,43 +64,18 @@ function AddProjectModal({ isOpen, onClose, onAdd }) {
     });
   };
 
-  const handleImageChange = (field) => async (e) => {
+  const handleImageChange = (field) => (e) => {
     const file = e.target.files[0];
     if (!file) return;
 
-    // Store the file for preview
+    // Just store the file for preview - don't upload yet
     setForm(prev => ({
       ...prev,
       [field]: file
     }));
-
-    // Upload to Google Drive with title
-    try {
-      setIsUploading(true);
-      // Pass the project title to rename the upload
-      const result = await api.uploadFile(file, form.title.trim() || "Abstract");
-      
-      // Store the Google Drive link
-      setForm(prev => ({
-        ...prev,
-        abstractLink: result.driveLink
-      }));
-      
-      console.log("File uploaded successfully:", result);
-    } catch (error) {
-      alert("Failed to upload file to Google Drive: " + error.message);
-      // Reset the file if upload fails
-      setForm(prev => ({
-        ...prev,
-        [field]: null,
-        abstractLink: null
-      }));
-    } finally {
-      setIsUploading(false);
-    }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     // Validate required fields
@@ -137,6 +114,24 @@ function AddProjectModal({ isOpen, onClose, onAdd }) {
       return;
     }
 
+    // Show uploading modal
+    setIsUploading(true);
+    setShowSuccessMessage(false);
+    setModalMessage("Uploading image to Google Drive...");
+
+    // Upload image if one was selected
+    let abstractLink = null;
+    if (form.abstractImage) {
+      try {
+        const result = await api.uploadFile(form.abstractImage, form.title.trim());
+        abstractLink = result.driveLink;
+      } catch (error) {
+        setIsUploading(false);
+        alert("Failed to upload image to Google Drive: " + error.message);
+        return;
+      }
+    }
+
     // Transform form data to match backend expectations
     const projectData = {
       title: form.title.trim(),
@@ -149,18 +144,46 @@ function AddProjectModal({ isOpen, onClose, onAdd }) {
       panelMembers: form.panels.filter(panel => panel.trim()),
       programHead: form.programHead.trim(),
       dean: form.dean.trim(),
-      abstractLink: form.abstractLink || null, // Use Google Drive link
+      abstractLink: abstractLink || null,
       bindingType: form.bookType || "Hardbound"
     };
 
-    onAdd && onAdd(projectData);
-    onClose();
+    // Show success message
+    setModalMessage("New Capstone saved successfully");
+    setShowSuccessMessage(true);
+
+    // Close modal after 2 seconds
+    setTimeout(() => {
+      setIsUploading(false);
+      onAdd && onAdd(projectData);
+      onClose();
+    }, 2000);
   };
 
   /* ================= UI ================= */
 
   return (
-    <div className="modal-overlay" onClick={onClose}>
+    <>
+      {isUploading && (
+        <div className="save-modal-overlay">
+          <div className="save-modal-container">
+            {!showSuccessMessage ? (
+              <>
+                <div className="save-spinner-animation">
+                  <div className="save-spinner"></div>
+                </div>
+                <p className="save-modal-text">{modalMessage}</p>
+              </>
+            ) : (
+              <>
+                <div className="save-success-icon">✓</div>
+                <p className="save-modal-text success-text">{modalMessage}</p>
+              </>
+            )}
+          </div>
+        </div>
+      )}
+      <div className="modal-overlay" onClick={onClose}>
       <div
         className="modal-content add-project-modal"
         onClick={e => e.stopPropagation()}
@@ -458,30 +481,19 @@ function AddProjectModal({ isOpen, onClose, onAdd }) {
               {/* ABSTRACT (image upload) */}
 
               <div className="form-group">
-                <label className="form-label">
-                  Abstract
-                </label>
+                <div className="abstract-label-row">
+                  <label className="form-label">
+                    Abstract
+                  </label>
+                </div>
 
                 <div className="image-placeholder">
                   {form.abstractImage ? (
-                    <>
-                      <img
-                        src={URL.createObjectURL(form.abstractImage)}
-                        alt="Abstract preview"
-                        className="preview-image"
-                      />
-                      {isUploading && (
-                        <div className="upload-overlay">
-                          <div className="spinner"></div>
-                          <p>Uploading to Google Drive...</p>
-                        </div>
-                      )}
-                      {form.abstractLink && !isUploading && (
-                        <div className="upload-success">
-                          ✓ Uploaded
-                        </div>
-                      )}
-                    </>
+                    <img
+                      src={URL.createObjectURL(form.abstractImage)}
+                      alt="Abstract preview"
+                      className="preview-image"
+                    />
                   ) : (
                     <div className="placeholder-content">
                       <svg
@@ -512,6 +524,7 @@ function AddProjectModal({ isOpen, onClose, onAdd }) {
             <button
               type="submit"
               className="submit-btn"
+              disabled={isUploading}
             >
               Save
             </button>
@@ -530,6 +543,93 @@ textarea::placeholder {
   font-size:0.7rem;
   font-weight:400;
   font-family:inherit;
+}
+
+.save-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+  backdrop-filter: blur(2px);
+}
+
+.save-modal-container {
+  background: white;
+  border-radius: 12px;
+  padding: 2.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.2rem;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+  min-width: 280px;
+  max-width: 350px;
+}
+
+.save-spinner-animation {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 60px;
+  height: 60px;
+}
+
+.save-spinner {
+  width: 50px;
+  height: 50px;
+  border: 4px solid #f0f0f0;
+  border-top: 4px solid #2563eb;
+  border-radius: 50%;
+  animation: save-spin 1s linear infinite;
+}
+
+.save-success-icon {
+  width: 60px;
+  height: 60px;
+  background: #10b981;
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+  font-weight: bold;
+  animation: save-scale-in 0.4s ease-out;
+}
+
+.save-modal-text {
+  font-size: 1rem;
+  font-weight: 500;
+  color: #333;
+  margin: 0;
+  text-align: center;
+}
+
+.save-modal-text.success-text {
+  color: #10b981;
+}
+
+@keyframes save-spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes save-scale-in {
+  0% {
+    transform: scale(0.8);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
 }
 
 .modal-overlay {
@@ -666,6 +766,13 @@ textarea::placeholder {
 .required {
   color: #dc2626;
   margin-left:0.05rem;
+}
+
+.abstract-label-row {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  margin-bottom: 0.5rem;
 }
 
 .section-header {
@@ -835,6 +942,12 @@ textarea {
   background:#0d0f15;
 }
 
+.submit-btn:disabled {
+  background:#9ca3af;
+  cursor:not-allowed;
+  opacity:0.7;
+}
+
 @media (max-width:767px) {
   .modal-content {
     width:84vw;
@@ -937,6 +1050,7 @@ textarea {
 
       </div>
     </div>
+    </>
   );
 }
 
