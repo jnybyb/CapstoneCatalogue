@@ -69,14 +69,56 @@ function AddProjectModal({ isOpen, onClose, onAdd }) {
   const handleSubmit = (e) => {
     e.preventDefault();
 
+    // Validate required fields
+    if (!form.title.trim()) {
+      alert("Please enter a project title");
+      return;
+    }
+
+    if (!form.authors[0].trim()) {
+      alert("Please enter at least one author");
+      return;
+    }
+
+    if (!form.month || !form.year) {
+      alert("Please select month and year");
+      return;
+    }
+
+    if (!form.adviser.trim()) {
+      alert("Please enter an adviser name");
+      return;
+    }
+
+    if (!form.coordinators[0].trim()) {
+      alert("Please enter at least one thesis coordinator");
+      return;
+    }
+
+    if (!form.programHead.trim()) {
+      alert("Please enter program head name");
+      return;
+    }
+
+    if (!form.dean.trim()) {
+      alert("Please enter dean name");
+      return;
+    }
+
     // Transform form data to match backend expectations
     const projectData = {
-      bookNum: form.bookNum,
-      title: form.title,
-      authors: form.authors.filter(author => author.trim()).join(', '), // Join authors into a string
+      title: form.title.trim(),
       month: form.month,
       year: form.year,
-      abstract: form.abstract || '' // Add abstract if it exists
+      monthYear: `${form.month} ${form.year}`,
+      authors: form.authors.filter(author => author.trim()),
+      adviser: form.adviser.trim(),
+      coordinators: form.coordinators.filter(coord => coord.trim()),
+      panelMembers: form.panels.filter(panel => panel.trim()),
+      programHead: form.programHead.trim(),
+      dean: form.dean.trim(),
+      abstractLink: form.abstractImage ? form.abstractImage.name : null,
+      bindingType: form.bookType || "Hardbound"
     };
 
     onAdd && onAdd(projectData);
@@ -292,8 +334,8 @@ function AddProjectModal({ isOpen, onClose, onAdd }) {
                   onChange={handleChange}
                 >
                   <option value="">Select Book Type</option>
-                  <option value="Hard Bound">Hard Bound</option>
-                  <option value="Soft Bound">Soft Bound</option>
+                  <option value="Hardbound">Hardbound</option>
+                  <option value="Softbound">Softbound</option>
                 </select>
               </div>
 

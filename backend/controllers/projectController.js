@@ -1,5 +1,29 @@
 const db = require("../config/db");
 
+// Generate book number: Format MONYEAR-INCREMENT (e.g., JUL24-001)
+const generateBookNumber = (month, year, callback) => {
+  const monthAbbr = month.substring(0, 3).toUpperCase();
+  const yearShort = year.substring(2, 4);
+  const monthYearCode = monthAbbr + yearShort;
+
+  // Find the latest book number with the same MONYEAR prefix
+  const query = `
+    SELECT COUNT(*) as count FROM projects 
+    WHERE book_number LIKE ?
+  `;
+
+  db.query(query, [`${monthYearCode}%`], (err, results) => {
+    if (err) {
+      callback(null, err);
+      return;
+    }
+
+    const nextIncrement = results[0].count + 1;
+    const bookNumber = `${monthYearCode}-${String(nextIncrement).padStart(3, "0")}`;
+    callback(bookNumber, null);
+  });
+};
+
 // GET all projects
 exports.getProjects = (req, res) => {
   db.query("SELECT * FROM projects", (err, results) => {
@@ -13,23 +37,229 @@ exports.getProjects = (req, res) => {
 
 // ADD project
 exports.addProject = (req, res) => {
-  const { bookNum, title, authors, month, year, abstract } = req.body;
+  const {
+    title,
+    month,
+    year,
+    monthYear,
+    abstractLink,
+    bindingType,
+    authors,
+    adviser,
+    coordinators,
+    panelMembers,
+    programHead,
+    dean,
+  } = req.body;
 
-  const sql = `
-    INSERT INTO projects 
-    (bookNum, title, authors, month, year, abstract)
-    VALUES (?, ?, ?, ?, ?, ?)
-  `;
-
-  db.query(
-    sql,
-    [bookNum, title, authors, month, year, abstract],
-    (err, result) => {
-      if (err) {
-        res.status(500).send(err);
-      } else {
-        res.json({ message: "Project added" });
-      }
+  // Generate book number
+  generateBookNumber(month || monthYear.split(" ")[0], year || monthYear.split(" ")[1], (bookNumber, err) => {
+    if (err) {
+      return res.status(500).json({ error: "Failed to generate book number" });
     }
-  );
+
+    // Insert project
+    const projectSql = `
+      INSERT INTO projects 
+      (book_number, title, month_year, abstract_link, binding_type)
+      VALUES (?, ?, ?, ?, ?)
+    `;
+
+    db.query(
+      projectSql,
+      [
+        bookNumber,
+        title,
+        monthYear || `${month} ${year}`,
+        abstractLink || null,
+        bindingType || "Hardbound",
+      ],
+      (err, projectResult) => {
+        if (err) {
+          console.error("Error inserting project:", err);
+          return res.status(500).json({ error: "Failed to add project" });
+        }
+
+        const projectId = projectResult.insertId;
+        let completedInserts = 0;
+        let totalInserts = 0;
+        let hasError = false;
+
+        // Count total inserts needed
+        if (authors && authors.length > 0) totalInserts += authors.length;
+        if (adviser) totalInserts += 1;
+        if (coordinators && coordinators.length > 0) totalInserts += coordinators.length;
+        if (panelMembers && panelMembers.length > 0) totalInserts += panelMembers.length;
+        if (programHead) totalInserts += 1;
+        if (dean) totalInserts += 1;
+
+        // If no faculty/authors, send response immediately
+        if (totalInserts === 0) {
+          return res.json({
+            message: "Project added successfully",
+            projectId,
+            bookNumber,
+          });
+        }
+
+        const checkCompletion = () => {
+          completedInserts++;
+          if (completedInserts === totalInserts && !hasError) {
+            res.json({
+              message: "Project added successfully",
+              projectId,
+              bookNumber,
+            });
+          }
+        };
+
+        const handleError = (error) => {
+          if (!hasError) {
+            hasError = true;
+            console.error("Error during insert:", error);
+            res.status(500).json({ error: "Failed to save project details" });
+          }
+        };
+
+        // Insert authors
+        if (authors && authors.length > 0) {
+          authors.forEach((authorName, index) => {
+            if (authorName.trim()) {
+              const authorSql = `INSERT INTO authors (name) VALUES (?)`;
+              db.query(authorSql, [authorName.trim()], (err, authorResult) => {
+                if (err) {
+                  handleError(err);
+                  return;
+                }
+
+                const authorId = authorResult.insertId;
+                const linkSql = `INSERT INTO project_authors (project_id, author_id, author_order) VALUES (?, ?, ?)`;
+                db.query(linkSql, [projectId, authorId, index + 1], (err) => {
+                  if (err) {
+                    handleError(err);
+                    return;
+                  }
+                  checkCompletion();
+                });
+              });
+            }
+          });
+        }
+
+        // Insert adviser
+        if (adviser && adviser.trim()) {
+          const facultySql = `INSERT INTO faculty (name, role) VALUES (?, ?)`;
+          db.query(facultySql, [adviser.trim(), "Adviser"], (err, facultyResult) => {
+            if (err) {
+              handleError(err);
+              return;
+            }
+
+            const facultyId = facultyResult.insertId;
+            const linkSql = `INSERT INTO project_faculty (project_id, faculty_id, role) VALUES (?, ?, ?)`;
+            db.query(linkSql, [projectId, facultyId, "Adviser"], (err) => {
+              if (err) {
+                handleError(err);
+                return;
+              }
+              checkCompletion();
+            });
+          });
+        }
+
+        // Insert thesis coordinators
+        if (coordinators && coordinators.length > 0) {
+          coordinators.forEach((coordinatorName) => {
+            if (coordinatorName.trim()) {
+              const facultySql = `INSERT INTO faculty (name, role) VALUES (?, ?)`;
+              db.query(facultySql, [coordinatorName.trim(), "Thesis Coordinator"], (err, facultyResult) => {
+                if (err) {
+                  handleError(err);
+                  return;
+                }
+
+                const facultyId = facultyResult.insertId;
+                const linkSql = `INSERT INTO project_faculty (project_id, faculty_id, role) VALUES (?, ?, ?)`;
+                db.query(linkSql, [projectId, facultyId, "Thesis Coordinator"], (err) => {
+                  if (err) {
+                    handleError(err);
+                    return;
+                  }
+                  checkCompletion();
+                });
+              });
+            }
+          });
+        }
+
+        // Insert panel members
+        if (panelMembers && panelMembers.length > 0) {
+          panelMembers.forEach((memberName, index) => {
+            if (memberName.trim()) {
+              const role = index === 0 ? "Chair Panel" : "Panel Member";
+              const facultySql = `INSERT INTO faculty (name, role) VALUES (?, ?)`;
+              db.query(facultySql, [memberName.trim(), role], (err, facultyResult) => {
+                if (err) {
+                  handleError(err);
+                  return;
+                }
+
+                const facultyId = facultyResult.insertId;
+                const linkSql = `INSERT INTO project_faculty (project_id, faculty_id, role) VALUES (?, ?, ?)`;
+                db.query(linkSql, [projectId, facultyId, role], (err) => {
+                  if (err) {
+                    handleError(err);
+                    return;
+                  }
+                  checkCompletion();
+                });
+              });
+            }
+          });
+        }
+
+        // Insert program head
+        if (programHead && programHead.trim()) {
+          const facultySql = `INSERT INTO faculty (name, role) VALUES (?, ?)`;
+          db.query(facultySql, [programHead.trim(), "Program Head"], (err, facultyResult) => {
+            if (err) {
+              handleError(err);
+              return;
+            }
+
+            const facultyId = facultyResult.insertId;
+            const linkSql = `INSERT INTO project_faculty (project_id, faculty_id, role) VALUES (?, ?, ?)`;
+            db.query(linkSql, [projectId, facultyId, "Program Head"], (err) => {
+              if (err) {
+                handleError(err);
+                return;
+              }
+              checkCompletion();
+            });
+          });
+        }
+
+        // Insert dean
+        if (dean && dean.trim()) {
+          const facultySql = `INSERT INTO faculty (name, role) VALUES (?, ?)`;
+          db.query(facultySql, [dean.trim(), "Dean"], (err, facultyResult) => {
+            if (err) {
+              handleError(err);
+              return;
+            }
+
+            const facultyId = facultyResult.insertId;
+            const linkSql = `INSERT INTO project_faculty (project_id, faculty_id, role) VALUES (?, ?, ?)`;
+            db.query(linkSql, [projectId, facultyId, "Dean"], (err) => {
+              if (err) {
+                handleError(err);
+                return;
+              }
+              checkCompletion();
+            });
+          });
+        }
+      }
+    );
+  });
 };
