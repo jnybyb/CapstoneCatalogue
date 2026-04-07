@@ -102,7 +102,7 @@ const uploadFileToDrive = async (fileBuffer, originalName, mimeType, folderId) =
         mimeType: mimeType,
         body: stream,
       },
-      fields: "id, webViewLink, name",
+      fields: "id, webViewLink, webContentLink, name",
     });
 
     // Make file publicly accessible (optional, for easy access)
@@ -160,11 +160,64 @@ const getViewLink = (fileId) => {
   return `https://drive.google.com/file/d/${fileId}/view`;
 };
 
+/**
+ * Fetch file content from Google Drive
+ * @param {string} fileId - Google Drive file ID
+ * @returns {Promise<Buffer>} File content as buffer
+ */
+const getFileContent = async (fileId) => {
+  try {
+    const drive = initializeDriveClient();
+    
+    const response = await drive.files.get(
+      {
+        fileId: fileId,
+        alt: 'media'
+      },
+      { responseType: 'stream' }
+    );
+
+    // Convert stream to buffer
+    return new Promise((resolve, reject) => {
+      const chunks = [];
+      response.data.on('data', (chunk) => chunks.push(chunk));
+      response.data.on('end', () => resolve(Buffer.concat(chunks)));
+      response.data.on('error', reject);
+    });
+  } catch (error) {
+    console.error("Error fetching file from Google Drive:", error);
+    throw new Error(`Failed to fetch file: ${error.message}`);
+  }
+};
+
+/**
+ * Get file metadata from Google Drive
+ * @param {string} fileId - Google Drive file ID
+ * @returns {Promise<{mimeType: string, name: string}>}
+ */
+const getFileMetadata = async (fileId) => {
+  try {
+    const drive = initializeDriveClient();
+    
+    const response = await drive.files.get({
+      fileId: fileId,
+      fields: 'mimeType, name'
+    });
+
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching file metadata from Google Drive:", error);
+    throw new Error(`Failed to fetch file metadata: ${error.message}`);
+  }
+};
+
 module.exports = {
   uploadFileToDrive,
   deleteFileFromDrive,
   getDownloadLink,
   getViewLink,
+  getFileContent,
+  getFileMetadata,
   initializeDriveClient,
   getAuthorizationUrl,
   getTokensFromCode,

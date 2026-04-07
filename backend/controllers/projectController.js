@@ -3,7 +3,9 @@ const {
   uploadFileToDrive, 
   deleteFileFromDrive,
   getAuthorizationUrl,
-  getTokensFromCode
+  getTokensFromCode,
+  getFileContent,
+  getFileMetadata
 } = require("../utils/googleDrive");
 
 // Generate book number: Format MONYEAR-INCREMENT (e.g., JUL24-001)
@@ -393,6 +395,34 @@ exports.handleAuthCallback = async (req, res) => {
     }
   } catch (error) {
     console.error("Error handling auth callback:", error);
+    res.status(500).json({ error: error.message });
+  }
+};
+
+// Proxy endpoint to serve images from Google Drive with CORS headers
+exports.getImageProxy = async (req, res) => {
+  try {
+    const { fileId } = req.params;
+
+    if (!fileId) {
+      return res.status(400).json({ error: "File ID is required" });
+    }
+
+    // Get file metadata first to know the MIME type
+    const metadata = await getFileMetadata(fileId);
+    const fileContent = await getFileContent(fileId);
+
+    // Set CORS and appropriate headers
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+    res.setHeader('Content-Type', metadata.mimeType);
+    res.setHeader('Content-Length', fileContent.length);
+    res.setHeader('Cache-Control', 'public, max-age=3600'); // Cache for 1 hour
+
+    res.send(fileContent);
+  } catch (error) {
+    console.error("Error fetching image from Google Drive:", error);
     res.status(500).json({ error: error.message });
   }
 };

@@ -8,7 +8,8 @@ const {
   uploadFile,
   deleteFile,
   getAuthUrl,
-  handleAuthCallback
+  handleAuthCallback,
+  getImageProxy
 } = require("../controllers/projectController");
 
 router.get("/", getProjects);
@@ -20,6 +21,9 @@ router.post("/upload", upload.single("file"), uploadFile);
 
 // Delete file from Google Drive
 router.delete("/file/:fileId", deleteFile);
+
+// Image proxy endpoint - serves images from Google Drive with CORS headers
+router.get("/image/:fileId", getImageProxy);
 
 // OAuth2 authentication endpoints
 router.get("/auth/url", getAuthUrl);

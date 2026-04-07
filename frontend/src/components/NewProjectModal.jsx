@@ -519,8 +519,11 @@ function AddProjectModal({ isOpen, onClose, onAdd }) {
                 />
               </div>
 
+            </div>
+          </div>
+          </div>
 
-            <div className="modal-form-footer">
+          <div className="modal-form-footer">
             <button
               type="submit"
               className="submit-btn"
@@ -528,12 +531,9 @@ function AddProjectModal({ isOpen, onClose, onAdd }) {
             >
               Save
             </button>
-        
           </div>
-          </div>
-          </div>
-          </div>
-          </form>
+
+        </form>
 
         <style>{`
 
@@ -653,7 +653,7 @@ textarea::placeholder {
 .modal-content {
   background:#fff;
   padding:0;
-  border-radius:0.8rem;
+  border-radius:0.65rem;
   overflow:hidden;
   box-shadow:0 2px 16px rgba(0,0,0,0.15);
   position:relative;
@@ -846,6 +846,7 @@ textarea::placeholder {
   width:100%;
   height:100%;
   object-fit: cover;
+  object-position: top;
 }
 
 .form-row-inline {
@@ -864,6 +865,16 @@ select {
   font-size:0.7rem;
   color: #2a2c47;
   background:#fff;
+}
+
+select {
+  padding-right:1.8rem;
+  appearance: none;
+  background-image: url('/src/assets/arrow down.png');
+  background-repeat: no-repeat;
+  background-position: right 0.5rem center;
+  background-size: 0.85rem;
+  padding-left: 0.5rem;
 }
 
 input:focus,

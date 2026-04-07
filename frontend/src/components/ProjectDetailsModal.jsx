@@ -6,6 +6,66 @@ function ProjectDetailsModal({ project, isOpen, onClose }) {
 
   if (!isOpen || !project) return null;
 
+  // Extract fileId from Google Drive link and construct image URL
+  const getImageUrlFromDriveLink = (driveLink) => {
+    console.log("AbstractLink received:", driveLink);
+    
+    if (!driveLink) {
+      console.log("No driveLink provided");
+      return null;
+    }
+    
+    // Extract fileId from: https://drive.google.com/file/d/{fileId}/view
+    const fileIdMatch = driveLink.match(/\/d\/([a-zA-Z0-9-_]+)/);
+    if (fileIdMatch && fileIdMatch[1]) {
+      const fileId = fileIdMatch[1];
+      // Use backend proxy endpoint that serves with CORS headers
+      const proxyUrl = `/api/projects/image/${fileId}`;
+      console.log("Generated proxy URL:", proxyUrl);
+      return {
+        url: proxyUrl,
+        fileId: fileId,
+        driveLink: driveLink
+      };
+    }
+    
+    console.log("Could not extract fileId from link:", driveLink);
+    return null;
+  };
+
+  const imageUrl = getImageUrlFromDriveLink(project.abstractLink || project.abstract_link);
+  console.log("Final imageUrl object:", imageUrl);
+
+  const renderAbstractImage = () => {
+    if (!imageUrl) {
+      return <div className="abstract-text">No abstract available.</div>;
+    }
+
+    return (
+      <div className="abstract-image-container">
+        <img 
+          src={imageUrl.url}
+          alt="Abstract" 
+          className="abstract-image"
+          onError={(e) => {
+            console.error("Failed to load image from proxy:", imageUrl.url);
+            
+            // If proxy fails, show a Google Drive link
+            const container = e.target.parentElement;
+            container.innerHTML = `
+              <div class="abstract-fallback">
+                <p class="abstract-fallback-text">Unable to load abstract image.</p>
+                <a href="${imageUrl.driveLink}" target="_blank" rel="noopener noreferrer" class="view-drive-link">
+                  View Abstract on Google Drive →
+                </a>
+              </div>
+            `;
+          }}
+        />
+      </div>
+    );
+  };
+
   return (
     <div className="modal-overlay" onClick={onClose}>
       <div
@@ -15,7 +75,16 @@ function ProjectDetailsModal({ project, isOpen, onClose }) {
 
         <div className="document-preview">
 
+            <button 
+              className="modal-close-btn"
+              onClick={onClose}
+              aria-label="Close"
+            >
+              ×
+            </button>
           <div className="document-preview__header">
+            
+            
             {/* TITLE */}
             <h2 className="doc-title">
               {project.title || "-"}
@@ -52,11 +121,12 @@ function ProjectDetailsModal({ project, isOpen, onClose }) {
 
               <div className="staff-item">
                 <div className="staff-label">
-                  <strong>Panel</strong>
+                  <strong>Panels</strong>
                 </div>
-                <div className="panel-list">
-                  {project.panel
-                    ? project.panel.split(",").map((member, idx) => (
+                <div className="staff-value">
+                  <span>{project.chairPanel || "-"}</span>
+                  {project.panelMembers
+                    ? project.panelMembers.split(",").map((member, idx) => (
                         <div key={idx} className="panel-member">
                           <span>{member.trim()}</span>
                         </div>
@@ -98,11 +168,7 @@ function ProjectDetailsModal({ project, isOpen, onClose }) {
 
           {/* ABSTRACT BOX */}
           <div className="doc-abstract">
-            {project.abstract ? (
-              <img src={project.abstract} alt="Abstract" className="abstract-image" />
-            ) : (
-              <div className="abstract-text">No abstract available.</div>
-            )}
+            {renderAbstractImage()}
           </div>
           </div>
 
@@ -143,6 +209,28 @@ function ProjectDetailsModal({ project, isOpen, onClose }) {
 
         .modal-close {
           display: none;
+        }
+
+        .modal-close-btn {
+          position: absolute;
+          top: 0.5rem;
+          right: 1rem;
+          background: none;
+          border: none;
+          font-size: 1.8rem;
+          cursor: pointer;
+          color: #374151;
+          padding: 0;
+          width: 2rem;
+          height: 2rem;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          transition: color 0.2s ease;
+        }
+
+        .modal-close-btn:hover {
+          color: #111827;
         }
 
         .document-preview {
@@ -198,9 +286,9 @@ function ProjectDetailsModal({ project, isOpen, onClose }) {
 
         .doc-authors {
           text-align: center;
-          font-size: 0.9rem;
+          font-size: 0.75rem;
           margin-bottom: 0;
-          font-weight: 600;
+          font-weight: 700;
           font-family: 'DM Serif Display', serif;
           letter-spacing: 0.02em;
         }
@@ -209,6 +297,7 @@ function ProjectDetailsModal({ project, isOpen, onClose }) {
           display: grid;
           grid-template-columns: 1fr 1fr;
           gap: 2rem;
+          margin-top: 1.5rem;
           margin-bottom: 1rem;
           font-size: 0.85rem;
         }
@@ -233,14 +322,15 @@ function ProjectDetailsModal({ project, isOpen, onClose }) {
           display: flex;
           align-items: center;
           color: #15253c;
-          font-family: 'DM Serif Display', serif;
-          font-size: .9rem;
+          font-family: 'Inter', sans-serif;
+          font-size: .65rem;
+          font-weight: 800;
         }
 
         .staff-item strong {
-          font-weight: 500;
-          color: #57575ab0;
-          font-size: 0.6rem;
+          font-weight: 700;
+          color: #75757bc5;
+          font-size: 0.55rem;
         }
 
         .panel-list {
@@ -279,6 +369,50 @@ function ProjectDetailsModal({ project, isOpen, onClose }) {
         .abstract-text {
           font-size: 0.85rem;
           color: #4b5563;
+        }
+
+        .abstract-image-container {
+          width: 100%;
+          height: 100%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+
+        .abstract-fallback {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          width: 100%;
+          gap: 1rem;
+        }
+
+        .abstract-fallback-text {
+          font-size: 0.85rem;
+          color: #666;
+          text-align: center;
+          margin: 0;
+        }
+
+        .view-drive-link {
+          display: inline-flex;
+          align-items: center;
+          gap: 0.5rem;
+          padding: 0.6rem 1.2rem;
+          background: #4f46e5;
+          color: white;
+          text-decoration: none;
+          border-radius: 4px;
+          font-size: 0.85rem;
+          font-weight: 500;
+          transition: background 0.2s ease;
+          cursor: pointer;
+          font-family: inherit;
+        }
+
+        .view-drive-link:hover {
+          background: #4338ca;
         }
 
         /* MOBILE LANDSCAPE */
@@ -340,7 +474,7 @@ function ProjectDetailsModal({ project, isOpen, onClose }) {
         @media (max-width: 1024px) and (min-width: 601px) {
           .modal-content {
             width: calc(100vw - 38vw);
-            height: calc(100vh - 35vw);
+            height: calc(100vh - 30vw);
           }
         }
 
@@ -359,8 +493,8 @@ function ProjectDetailsModal({ project, isOpen, onClose }) {
 
           .modal-content {
             width: 85vw;
-            max-height: min(85vh, calc(100vh - 1.5rem));
-            max-height: min(85dvh, calc(100dvh - 1.5rem));
+            max-height: min(95vh, calc(100vh - 1vh));
+            max-height: min(95dvh, calc(100dvh - 1dvh));
             padding: 0.1rem 0.75rem;
           }
 
