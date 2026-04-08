@@ -675,7 +675,7 @@ textarea::placeholder {
   flex-shrink:0;
   padding:0.85rem 1rem 0.85rem 1.25rem;
   border-bottom:1px solid #e8eaee;
-  background:#fff;
+  background:#F3F4F6;
 }
 
 .add-project-modal__header h2 {
@@ -732,7 +732,7 @@ textarea::placeholder {
 .modal-form-footer {
   flex-shrink:0;
   padding:0.65rem 1.25rem 1rem;
-  background:#fff;
+  background: #F3F4F6;
   display:flex;
   justify-content:flex-end;
   align-items:center;

@@ -45,7 +45,7 @@ export const DeleteConfirmationModal = ({
                 Deleting...
               </>
             ) : (
-              "Delete Project"
+              "Delete"
             )}
           </button>
         </div>
@@ -55,7 +55,7 @@ export const DeleteConfirmationModal = ({
         .delete-confirmation-overlay {
           position: fixed;
           inset: 0;
-          background: rgba(0, 0, 0, 0.6);
+          background: rgba(0, 0, 0, 0.65);
           display: flex;
           align-items: center;
           justify-content: center;
@@ -65,9 +65,9 @@ export const DeleteConfirmationModal = ({
 
         .delete-confirmation-modal {
           background: white;
-          border-radius: 12px;
+          border-radius: 8px;
           padding: 2rem;
-          max-width: 400px;
+          max-width: 350px;
           width: 90%;
           box-shadow: 0 15px 50px rgba(0, 0, 0, 0.3);
           animation: slideIn 0.2s ease-out;
@@ -99,7 +99,7 @@ export const DeleteConfirmationModal = ({
 
         .delete-title {
           margin: 0;
-          font-size: 1.5rem;
+          font-size: 1rem;
           font-weight: 700;
           color: #dc2626;
           text-align: center;
@@ -111,7 +111,7 @@ export const DeleteConfirmationModal = ({
         }
 
         .delete-message {
-          font-size: 0.95rem;
+          font-size: 0.75rem;
           color: #374151;
           margin: 0 0 0.75rem 0;
           line-height: 1.5;
@@ -124,7 +124,7 @@ export const DeleteConfirmationModal = ({
         }
 
         .delete-warning {
-          font-size: 0.85rem;
+          font-size: 0.65rem;
           color: #6b7280;
           margin: 0;
           line-height: 1.4;
@@ -145,32 +145,32 @@ export const DeleteConfirmationModal = ({
         .delete-confirm-btn {
           padding: 0.75rem 1.5rem;
           border: none;
-          border-radius: 6px;
-          font-size: 0.95rem;
+          border-radius: 4px;
+          font-size: 0.65rem;
           font-weight: 600;
           cursor: pointer;
           transition: all 0.2s ease;
           display: flex;
           align-items: center;
+          justify-content: center;
           gap: 0.5rem;
           font-family: 'Inter', sans-serif;
+          flex: 1;
         }
 
         .delete-cancel-btn {
-          background: #e5e7eb;
-          color: #374151;
+          background: #ffffff;
+          border: 1px solid #dc2626;
         }
 
         .delete-cancel-btn:hover:not(:disabled) {
-          background: #d1d5db;
+          background: #e8eef8;
           color: #111827;
         }
 
         .delete-confirm-btn {
           background: #dc2626;
           color: white;
-          min-width: 140px;
-          justify-content: center;
         }
 
         .delete-confirm-btn:hover:not(:disabled) {
@@ -191,7 +191,7 @@ export const DeleteConfirmationModal = ({
           border: 2px solid rgba(255, 255, 255, 0.3);
           border-top-color: white;
           border-radius: 50%;
-          animation: spin 0.6s linear infinite;
+          animation: spin 1s linear infinite;
         }
 
         @keyframes spin {

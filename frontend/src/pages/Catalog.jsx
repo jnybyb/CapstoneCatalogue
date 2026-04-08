@@ -3,6 +3,7 @@ import Pagination from '../components/Pagination';
 import SearchBar from '../components/SearchBar';
 import AddProject from '../components/AddProjectButton';
 import ProjectTable from '../components/ProjectTable';
+import { DeleteConfirmationModal } from '../components/DeleteConfirmationModal';
 import { useState, useEffect, useRef } from 'react';
 import { api } from '../services/api';
 import noDataIcon from '../assets/no data.png';
@@ -13,6 +14,9 @@ function Catalog() {
   const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [deleteConfirmationOpen, setDeleteConfirmationOpen] = useState(false);
+  const [projectToDelete, setProjectToDelete] = useState(null);
+  const [isDeleting, setIsDeleting] = useState(false);
   const tableSlotRef = useRef(null);
 
   useEffect(() => {
@@ -66,9 +70,17 @@ function Catalog() {
     }
   };
 
-  const handleDeleteProject = async (project) => {
+  const handleDeleteProject = (project) => {
+    setProjectToDelete(project);
+    setDeleteConfirmationOpen(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!projectToDelete) return;
+    
     try {
-      await api.deleteProject(project.id);
+      setIsDeleting(true);
+      await api.deleteProject(projectToDelete.id);
       // Refresh the projects list after deletion
       const data = await api.getProjects();
       setProjects(data);
@@ -76,10 +88,19 @@ function Catalog() {
       if (currentPage > Math.ceil(data.length / itemsPerPage)) {
         setCurrentPage(1);
       }
+      setDeleteConfirmationOpen(false);
+      setProjectToDelete(null);
     } catch (err) {
       console.error('Error deleting project:', err);
       alert('Failed to delete project. Please try again.');
+    } finally {
+      setIsDeleting(false);
     }
+  };
+
+  const handleCancelDelete = () => {
+    setDeleteConfirmationOpen(false);
+    setProjectToDelete(null);
   };
 
   const totalPages = Math.ceil(projects.length / itemsPerPage);
@@ -126,6 +147,13 @@ function Catalog() {
           </div>
         )}
 
+        <DeleteConfirmationModal
+          isVisible={deleteConfirmationOpen}
+          projectTitle={projectToDelete?.title || "Project"}
+          onConfirm={handleConfirmDelete}
+          onCancel={handleCancelDelete}
+          isLoading={isDeleting}
+        />
       </div>
 
       <style>{`
