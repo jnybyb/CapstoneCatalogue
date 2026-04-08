@@ -7,6 +7,7 @@ const {
   addProject,
   uploadFile,
   deleteFile,
+  deleteProject,
   getAuthUrl,
   handleAuthCallback,
   getImageProxy
@@ -16,14 +17,15 @@ router.get("/", getProjects);
 
 router.post("/", addProject);
 
-// File upload endpoint - handles image/file upload to Google Drive
+// More specific routes FIRST (file operations)
 router.post("/upload", upload.single("file"), uploadFile);
 
-// Delete file from Google Drive
 router.delete("/file/:fileId", deleteFile);
 
-// Image proxy endpoint - serves images from Google Drive with CORS headers
 router.get("/image/:fileId", getImageProxy);
+
+// Less specific routes AFTER
+router.delete("/:projectId", deleteProject);
 
 // OAuth2 authentication endpoints
 router.get("/auth/url", getAuthUrl);

@@ -297,6 +297,50 @@ exports.addProject = (req, res) => {
   });
 };
 
+// DELETE project
+exports.deleteProject = (req, res) => {
+  const { projectId } = req.params;
+
+  if (!projectId) {
+    return res.status(400).json({ error: "Project ID is required" });
+  }
+
+  // Delete all related records in the following order:
+  // 1. project_authors
+  // 2. project_faculty
+  // 3. projects
+
+  const deleteProjectAuthors = `DELETE FROM project_authors WHERE project_id = ?`;
+  db.query(deleteProjectAuthors, [projectId], (err) => {
+    if (err) {
+      console.error("Error deleting project authors:", err);
+      return res.status(500).json({ error: "Failed to delete project" });
+    }
+
+    const deleteProjectFaculty = `DELETE FROM project_faculty WHERE project_id = ?`;
+    db.query(deleteProjectFaculty, [projectId], (err) => {
+      if (err) {
+        console.error("Error deleting project faculty:", err);
+        return res.status(500).json({ error: "Failed to delete project" });
+      }
+
+      const deleteProject = `DELETE FROM projects WHERE id = ?`;
+      db.query(deleteProject, [projectId], (err, result) => {
+        if (err) {
+          console.error("Error deleting project:", err);
+          return res.status(500).json({ error: "Failed to delete project" });
+        }
+
+        if (result.affectedRows === 0) {
+          return res.status(404).json({ error: "Project not found" });
+        }
+
+        res.json({ message: "Project deleted successfully" });
+      });
+    });
+  });
+};
+
 // UPLOAD file to Google Drive
 exports.uploadFile = async (req, res) => {
   try {

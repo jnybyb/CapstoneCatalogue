@@ -1,10 +1,14 @@
-import React from "react";
+import React, { useState } from "react";
 import { useBodyScrollLock } from "../hooks/useBodyScrollLock";
+import adviserIcon from "../assets/adviser.png";
+import panelsIcon from "../assets/panels.png";
+import coordinatorIcon from "../assets/coordinator.png";
+import programHeadIcon from "../assets/program head.png";
+import deanIcon from "../assets/Dean.png";
 
 function ProjectDetailsModal({ project, isOpen, onClose }) {
-  useBodyScrollLock(Boolean(isOpen && project));
 
-  if (!isOpen || !project) return null;
+  useBodyScrollLock(Boolean(isOpen && project));
 
   // Extract fileId from Google Drive link and construct image URL
   const getImageUrlFromDriveLink = (driveLink) => {
@@ -33,7 +37,7 @@ function ProjectDetailsModal({ project, isOpen, onClose }) {
     return null;
   };
 
-  const imageUrl = getImageUrlFromDriveLink(project.abstractLink || project.abstract_link);
+  const imageUrl = project ? getImageUrlFromDriveLink(project.abstractLink || project.abstract_link) : null;
   console.log("Final imageUrl object:", imageUrl);
 
   const renderAbstractImage = () => {
@@ -67,114 +71,124 @@ function ProjectDetailsModal({ project, isOpen, onClose }) {
   };
 
   return (
-    <div className="modal-overlay" onClick={onClose}>
-      <div
-        className="modal-content"
-        onClick={(e) => e.stopPropagation()}
-      >
+    <>
+      {isOpen && project && (
+        <div className="modal-overlay" onClick={onClose}>
+          <div
+            className="modal-content"
+            onClick={(e) => e.stopPropagation()}
+          >
 
-        <div className="document-preview">
+            <div className="document-preview">
 
-            <button 
-              className="modal-close-btn"
-              onClick={onClose}
-              aria-label="Close"
-            >
-              ×
-            </button>
-          <div className="document-preview__header">
-            
-            
-            {/* TITLE */}
-            <h2 className="doc-title">
-              {project.title || "-"}
-            </h2>
+                <button 
+                  className="modal-close-btn"
+                  onClick={onClose}
+                  aria-label="Close"
+                >
+                  ×
+                </button>
+                <div className="document-preview__header">
+                  
+                  
+                  {/* TITLE */}
+                  <h2 className="doc-title">
+                    {project.title || "-"}
+                  </h2>
 
-            {/* DATE */}
-            <div className="doc-date">
-              {project.date
-                ? new Date(project.date).toLocaleDateString(
-                    "en-US",
-                    { month: "long", year: "numeric" }
-                  )
-                : "-"}
-            </div>
+                  {/* DATE */}
+                  <div className="doc-date">
+                    {project.date
+                      ? new Date(project.date).toLocaleDateString(
+                          "en-US",
+                          { month: "long", year: "numeric" }
+                        )
+                      : "-"}
+                  </div>
 
-            {/* AUTHORS */}
-            <div className="doc-authors">
-              {project.names || "-"}
-            </div>
-          </div>
-
-          <div className="document-preview__scroll">
-          {/* ADVISER / PANEL / COORDINATOR / PROGRAM HEAD / DEAN */}
-          <div className="doc-staff">
-            <div className="staff-column left-column">
-              <div className="staff-item">
-                <div className="staff-label">
-                  <strong>Adviser</strong>
+                  {/* AUTHORS */}
+                  <div className="doc-authors">
+                    {project.names || "-"}
+                  </div>
                 </div>
-                <div className="staff-value">
-                  <span>{project.adviser || "-"}</span>
-                </div>
-              </div>
 
-              <div className="staff-item">
-                <div className="staff-label">
-                  <strong>Panels</strong>
-                </div>
-                <div className="staff-value">
-                  <span>{project.chairPanel || "-"}</span>
-                  {project.panelMembers
-                    ? project.panelMembers.split(",").map((member, idx) => (
-                        <div key={idx} className="panel-member">
-                          <span>{member.trim()}</span>
+                <div className="document-preview__scroll">
+                  {/* ADVISER / PANEL / COORDINATOR / PROGRAM HEAD / DEAN */}
+                  <div className="doc-staff">
+                    <div className="staff-column left-column">
+                      <div className="staff-item">
+                        <div className="staff-label">
+                          <img src={adviserIcon} alt="Adviser" className="staff-icon" />
+                          <strong>Adviser</strong>
                         </div>
-                      ))
-                    : "-"}
-                </div>
+                        <div className="staff-value">
+                          <span>{project.adviser || "-"}</span>
+                        </div>
+                      </div>
+
+                      <div className="staff-item">
+                        <div className="staff-label">
+                          <img src={panelsIcon} alt="Panels" className="staff-icon" />
+                          <strong>Panels</strong>
+                        </div>
+                        <div className="staff-value">
+                          <div>
+                            <span>{project.chairPanel || "-"}</span>
+                          </div>
+                          {project.panelMembers
+                            ? project.panelMembers.split(",").map((member, idx) => (
+                                <div key={idx} className="staff-value">
+                                  <span>{member.trim()}</span>
+                                </div>
+                              ))
+                            : null}
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="staff-column right-column">
+                      <div className="staff-item">
+                        <div className="staff-label">
+                          <img src={coordinatorIcon} alt="Coordinator" className="staff-icon" />
+                          <strong>Coordinator</strong>
+                        </div>
+                        <div className="staff-value">
+                          <span>{project.coordinator || "-"}</span>
+                        </div>
+                      </div>
+
+                      <div className="staff-item">
+                        <div className="staff-label">
+                          <img src={programHeadIcon} alt="Program Head" className="staff-icon" />
+                          <strong>Program Head</strong>
+                        </div>
+                        <div className="staff-value">
+                          <span>{project.programHead || "-"}</span>
+                        </div>
+                      </div>
+
+                      <div className="staff-item">
+                        <div className="staff-label">
+                          <img src={deanIcon} alt="Dean" className="staff-icon" />
+                          <strong>Dean</strong>
+                        </div>
+                        <div className="staff-value">
+                          <span>{project.dean || "-"}</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* ABSTRACT BOX */}
+                  <div className="doc-abstract">
+                    {renderAbstractImage()}
+                  </div>
               </div>
             </div>
-
-            <div className="staff-column right-column">
-              <div className="staff-item">
-                <div className="staff-label">
-                  <strong>Coordinator</strong>
-                </div>
-                <div className="staff-value">
-                  <span>{project.coordinator || "-"}</span>
-                </div>
-              </div>
-
-              <div className="staff-item">
-                <div className="staff-label">
-                  <strong>Program Head</strong>
-                </div>
-                <div className="staff-value">
-                  <span>{project.programHead || "-"}</span>
-                </div>
-              </div>
-
-              <div className="staff-item">
-                <div className="staff-label">
-                  <strong>Dean</strong>
-                </div>
-                <div className="staff-value">
-                  <span>{project.dean || "-"}</span>
-                </div>
-              </div>
-            </div>
           </div>
-
-          {/* ABSTRACT BOX */}
-          <div className="doc-abstract">
-            {renderAbstractImage()}
-          </div>
-          </div>
-
         </div>
-      </div>
-
+      )}
+      
       <style>{`
 
         .modal-overlay {
@@ -316,11 +330,19 @@ function ProjectDetailsModal({ project, isOpen, onClose }) {
         .staff-label {
           display: flex;
           align-items: center;
+          gap: 0.1rem;
+        }
+
+        .staff-icon {
+          width: 0.75rem;
+          height: 0.75rem;
+          object-fit: contain;
         }
 
         .staff-value {
           display: flex;
-          align-items: center;
+          flex-direction: column;
+          align-items: flex-start;
           color: #15253c;
           font-family: 'Inter', sans-serif;
           font-size: .65rem;
@@ -340,9 +362,7 @@ function ProjectDetailsModal({ project, isOpen, onClose }) {
         }
 
         .panel-member {
-          display: flex;
-          align-items: center;
-          gap: 0.5rem;
+          display: block;
           color: #4b5563;
           font-size: 0.85rem;
           font-family: 'DM Serif Display', serif;
@@ -518,8 +538,10 @@ function ProjectDetailsModal({ project, isOpen, onClose }) {
         }
 
       `}</style>
-    </div>
+    </>
+  
   );
 }
+
 
 export default ProjectDetailsModal;

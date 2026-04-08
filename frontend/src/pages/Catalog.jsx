@@ -66,6 +66,22 @@ function Catalog() {
     }
   };
 
+  const handleDeleteProject = async (project) => {
+    try {
+      await api.deleteProject(project.id);
+      // Refresh the projects list after deletion
+      const data = await api.getProjects();
+      setProjects(data);
+      // Reset pagination if needed
+      if (currentPage > Math.ceil(data.length / itemsPerPage)) {
+        setCurrentPage(1);
+      }
+    } catch (err) {
+      console.error('Error deleting project:', err);
+      alert('Failed to delete project. Please try again.');
+    }
+  };
+
   const totalPages = Math.ceil(projects.length / itemsPerPage);
   const startIdx = (currentPage - 1) * itemsPerPage;
   const endIdx = startIdx + itemsPerPage;
@@ -94,7 +110,7 @@ function Catalog() {
               <p className="no-data-text">No data available</p>
             </div>
           ) : (
-            <ProjectTable projects={currentProjects} />
+            <ProjectTable projects={currentProjects} onDelete={handleDeleteProject} />
           )}
         </div>
 

@@ -77,4 +77,22 @@ export const api = {
       throw error;
     }
   },
+
+  // Delete a project
+  deleteProject: async (projectId) => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/projects/${projectId}`, {
+        method: 'DELETE',
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to delete project');
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error('Error deleting project:', error);
+      throw error;
+    }
+  },
 };

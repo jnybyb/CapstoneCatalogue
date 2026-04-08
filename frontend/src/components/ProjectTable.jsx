@@ -189,6 +189,7 @@ function ProjectTable({ projects = [], onEdit, onDelete }) {
         project={selectedProject}
         isOpen={modalOpen}
         onClose={handleCloseModal}
+        onDelete={onDelete}
       />
 
       <style>{`
